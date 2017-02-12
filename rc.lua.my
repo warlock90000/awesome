@@ -6,25 +6,22 @@ local wibox         = require("wibox")
 local beautiful     = require("beautiful")
 local naughty       = require("naughty")
 local lain          = require("lain")
---local menubar       = require("menubar")
 local freedesktop   = require("freedesktop")
 local hotkeys_popup = require("awful.hotkeys_popup").widget
-local pulseaudio    = require("pulseaudio")
+local pulseaudio    = require("util.pulseaudio")
 local tyrannical = require("tyrannical")
---local radical       = require("radical")
 local vicious       = require("vicious")
 --local vicious_contrib = require("vicious.contrib")
+--local radical       = require("radical")
 --local blingbling    = require("blingbling")
 -- }}}
-awful.util.spawn_with_shell("xcompmgr -r 12.00 -o 0.75 -l 15.00 -t 15.00 -I 0.028 -O 0.03 -D 10.0 -c -C -F -n &")
--- awful.util.spawn_with_shell("pulseaudio --start&")
+
 -- {{{ Error handling
 if awesome.startup_errors then
     naughty.notify({ preset = naughty.config.presets.critical,
                      title = "Oops, there were errors during startup!",
                      text = awesome.startup_errors })
 end
-
 do
     local in_error = false
     awesome.connect_signal("debug::error", function (err)
@@ -52,11 +49,19 @@ end
 run_once("qterminal")
 run_once("subl")
 run_once("/home/jacka/bin/start.sh &")
+
+-- {{{ Compositing
+awful.util.spawn_with_shell("xcompmgr -r 12.00 -o 0.75 -l 15.00 -t 15.00 -I 0.028 -O 0.03 -D 10.0 -c -C -F -n &")
+-- }}}
+-- {{{ SlideShow
+wp_handle = require("util.wp_slideshow"):new("/home/jacka/Pictures/art/222/", "fit", 180)
+wp_handle:run()
+-- }}}
+-- {{{ Theme definitions
+beautiful.init(awful.util.get_configuration_dir() .. "/themes/multicolor/theme.lua")
 -- }}}
 
--- {{{ Variable definitions
-beautiful.init(awful.util.get_configuration_dir() .. "/themes/multicolor/theme.lua")
-
+-- {{{ Variable
 -- common
 local modkey     = "Mod4"
 local altkey     = "Mod1"
@@ -68,137 +73,9 @@ os.setlocale(os.getenv("LANG"))
 local browser    = "firefox"
 local gui_editor = "subl"
 local graphics   = "xnview"
+-- }}}
 
-tyrannical.settings.default_layout = awful.layout.suit.floating
-tyrannical.tags = {
-    {
-        name        = "",
-        init        = true,
-        exclusive   = true,
-        screen      = 1,
-        --screen      = screen.count()>1 and 2 or 1,-- Setup on screen 2 if there is more than 1 screen, else on screen 1
-        layout      = awful.layout.suit.floating,
-        class = {"Pale moon", "Firefox", "Vivaldi-stable", "Chromium"}
-    },
-    {
-        name        = "",                 -- Call the tag "Term"
-        init        = true,                   -- Load the tag on startup
-        exclusive   = true,                   -- Refuse any other type of clients (by classes)
-        screen      = 1,                  -- Create this tag on screen 1 and screen 2
-        layout      = awful.layout.suit.tile, -- Use the tile layout
-        class       = {"konsole", "terminator", "qterminal"}
-    },
-    {
-        name        = "2:",
-        init        = false,
-        exclusive   = true,
-        screen      = {1,2},
-        layout      = awful.layout.suit.tile,
-        class       = {"urxvt", "URxvt"}
-    },
-    {
-        name        = "",
-        init        = true,
-        exclusive   = true,
-        screen      = 1,
-        layout      = awful.layout.suit.max,
-        class       = {"Okular", "xpdf", "Xpdf", "Subl"}
-    },
-    {
-        name        = "",
-        init        = false,
-        exclusive   = true,
-        screen      = 1,
-        force_screen = true,
-        layout      = awful.layout.suit.max,
-        class = {"Vlc", "bomi", "Freetuxtv"}
-    },
-    {
-        name        = "",
-        init        = false,
-        exclusive   = true,
-        screen      = {1,2}, --screen.count()>1 and 2 or 1,
-        layout      = awful.layout.suit.max,
-        --exec_once   = {"dolphin"}, --When the tag is accessed for the first time, execute this command
-        class  = {"Thunar", "Konqueror", "Dolphin", "ark", "Nautilus", "Doublecmd"}
-    },
-    {
-        name        = "",
-        init        = false,
-        exclusive   = true,
-        screen      = 1,
-        layout      = awful.layout.suit.floating,
-        class = {"Kate", "KDevelop", "Codeblocks", "Code::Blocks" , "DDD", "kate4"}
-    },
-    {
-        name        = "",
-        init        = false,
-        exclusive   = true,
-        screen      = 2,
-        force_screen = true,
-        layout      = awful.layout.suit.floating,
-        class = {"Conky"}
-    },
-    {
-        name        = "",
-        init        = false,
-        exclusive   = true,
-        screen      = 2,
-        force_screen = true,
-        layout      = awful.layout.suit.tile,
-        class       = {"xterm", "XTerm"}
-    },
-    {
-        name        = "",
-        init        = false,
-        exclusive   = true,
-        screen      = 2,
-        force_screen = true,
-        layout      = awful.layout.suit.max,
-        class = {"ktorrent"}
-    },
-    {
-        name        = "",
-        init        = false,
-        exclusive   = true,
-        screen      = 2,
-        force_screen = true,
-        layout      = awful.layout.suit.max,
-        class = {"Audacious"}
-    },
-}
-
--- Ignore the tag "exclusive" property for the following clients (matched by classes)
-tyrannical.properties.intrusive = {
-    "ksnapshot"     , "pinentry"       , "gtksu"     , "kcalc"        , "xcalc"               ,
-    "feh"           , "Gradient editor", "About KDE" , "Paste Special", "Background color"    ,
-    "kcolorchooser" , "plasmoidviewer" , "Xephyr"    , "kruler"       , "plasmaengineexplorer",
-}
-
--- Ignore the tiled layout for the matching clients
-tyrannical.properties.floating = {
-    "MPlayer"      , "pinentry"        , "ksnapshot"  , "pinentry"     , "gtksu"          ,
-    "xine"         , "feh"             , "kmix"       , "kcalc"        , "xcalc"          ,
-    "yakuake"      , "Select Color$"   , "kruler"     , "kcolorchooser", "Paste Special"  ,
-    "New Form"     , "Insert Picture"  , "kcharselect", "mythfrontend" , "plasmoidviewer"
-}
-
--- Make the matching clients (by classes) on top of the default layout
-tyrannical.properties.ontop = {
-    "Xephyr"       , "ksnapshot"       , "kruler"
-}
-
--- Force the matching clients (by classes) to be centered on the screen on init
-tyrannical.properties.placement = {
-    kcalc = awful.placement.centered
-}
-tyrannical.properties.centered = {
-    "kcalc" , "Qalculate-gtk" , "Pavucontrol"
-}
-tyrannical.settings.block_children_focus_stealing = true --Block popups ()
-tyrannical.settings.group_children = true
-
--- table of layouts to cover with awful.layout.inc, order matters.
+--[[
 local layout_dim = {
     awful.layout.suit.floating,
     awful.layout.suit.tile,
@@ -220,13 +97,16 @@ local layout_dim = {
 local layouts = { layout_dim[1], layout_dim[2], layout_dim[2],
                   layout_dim[2], layout_dim[2], layout_dim[2],
                   layout_dim[1], layout_dim[1], layout_dim[1] }
-
+]]--
 -- lain
 lain.layout.termfair.nmaster        = 3
 lain.layout.termfair.ncol           = 1
 lain.layout.termfair.center.nmaster = 3
 lain.layout.termfair.center.ncol    = 1
 -- }}}
+
+local tags = require("util.tags")
+local wi = require("util.wi")
 
 -- {{{ Helper functions
 local function client_menu_toggle_fn()
@@ -271,12 +151,9 @@ local mymainmenu = freedesktop.menu.build({
 
 mylauncher = awful.widget.launcher({ image = beautiful.launcher_icon,
                                      menu = mymainmenu })
---menubar.utils.terminal = terminal -- Set the Menubar terminal for applications that require it
 -- }}}
 
 -- {{{ Wibox
-local wi = require("wi")
-
 -- Create a wibox for each screen and add it
 
 local taglist_buttons = awful.util.table.join(
@@ -320,8 +197,6 @@ local tasklist_buttons = awful.util.table.join(
                      awful.button({ }, 5, function ()
                                               awful.client.focus.byidx(-1)
                                           end))
-
--- ===============
 
 awful.screen.connect_for_each_screen(function(s)
     -- Quake application
@@ -424,7 +299,7 @@ awful.screen.connect_for_each_screen(function(s)
               widget = wibox.container.margin
             },
         },
-        --s.mytasklist, -- Middle widget        , ,
+        --s.mytasklist, -- Middle widget
         nil,
         { -- Right widgets
             layout = wibox.layout.fixed.horizontal,
@@ -504,12 +379,6 @@ awful.screen.connect_for_each_screen(function(s)
               bottom = 0,
               widget = wibox.container.margin
             },
-
-
-
-
-
-
             {
               {
                 {
@@ -722,89 +591,8 @@ awful.screen.connect_for_each_screen(function(s)
     }
 
 end)
---[[
---========= vicious =========--
-local net_vicious = wibox.widget.textbox()
-vicious.register(net_vicious, vicious.widgets.net, "⬇ <span font=\"Hack 10\">${enp3s0 carrier}M</span> <span color=\"#ffffff\"> ✦ </span>⬆ <span font=\"Hack 10\">${enp3s0 rx_mb}M</span>", 1)
-
-local mem_vicious = wibox.widget.textbox()
-    vicious.register(mem_vicious, vicious.widgets.mem, markup.big(markup.bold("Mem:$1% $2Mb Total:$3Mb Free:$4Mb $9")))
-
-local pkg_upd_vicious = wibox.widget.textbox()
-    vicious.register(pkg_upd_vicious, vicious.widgets.pkg, "$1", 1, "Arch")
-
-local cpufreq_vicious = wibox.widget.textbox()
-    vicious.register(cpufreq_vicious, vicious.widgets.cpufreq, "$5 $1 $2 $3 $4", 1, "cpu0")
-    -- CPU usage widget
-local cpuwidget = awful.widget.graph()
-cpuwidget:set_width(50)
-cpuwidget:set_height(30)
-cpuwidget:set_background_color("#494B4F")
-cpuwidget:set_color("#FF5656")
-
-cpuwidget_t = awful.tooltip({ objects = { cpuwidget.widget },})
-
--- Register CPU widget
-vicious.register(cpuwidget, vicious.widgets.cpu,
-                    function (widget, args)
-                        cpuwidget_t:set_text("CPU Usage: " .. args[1] .. "%")
-                        return args[1]
-                    end)
---========= vicious =========--
---========= desktop_conky =========--
-for s in screen do
-    -- do something
-
-    my_desktop_conky = wibox({ type = "desktop", visible = true, ontop = false, bg = "#5E1E00", position = "right", screen = s, height = 50})
-      my_desktop_conky:geometry({ x = 1000, y = 100, width = 300, height = 450 })
-        my_desktop_conky:setup{
-        layout = wibox.layout.align.vertical,
-            {
-              {
-                widget = net_vicious,
-              },
-              left   = 65,
-              right  = 0,
-              top    = 0,
-              bottom = 40,
-              widget = wibox.container.margin
-            },
-            {
-              {
-                widget = mem_vicious,
-              },
-              left   = 5,
-              right  = 0,
-              top    = 0,
-              bottom = 80,
-              widget = wibox.container.margin
-            },
-            {
-              {
-                widget = cpuwidget,
-              },
-              left   = 0,
-              right  = 0,
-              top    = 0,
-              bottom = 70,
-              widget = wibox.container.margin
-            },
-            {
-              {
-                widget = cpufreq_vicious,
-              },
-              left   = 25,
-              right  = 0,
-              top    = 0,
-              bottom = 40,
-              widget = wibox.container.margin
-            }
-        }
-end
---========= desktop_conky =========--
--- ====================
 -- }}}
-]]-----------------------------------------------------------------------------------
+
 -- {{{ Mouse bindings
 root.buttons(awful.util.table.join(
     awful.button({ }, 3, function () mymainmenu:toggle() end),
@@ -1238,5 +1026,3 @@ client.connect_signal("focus",
     end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 -- }}}
-wp_handle = require("wp_slideshow"):new("/home/jacka/Pictures/art/222/", "fit", 180)
-wp_handle:run()

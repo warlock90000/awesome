@@ -1,15 +1,3 @@
-
---[[
-
-     Multicolor Awesome WM config 2.0
-     github.com/copycat-killer
-
---the_witcher___triss_merigold_cosplay_by_dzikan-dantbhj.jpg
---the_witcher___triss_merigold_cosplay_by_dzikan-dantbho.jpg
---the_witcher___triss_merigold_cosplay_by_dzikan-dantbi5.jpg
---]]
-
-
 local theme                                     = {}
 
 theme.confdir                                   = os.getenv("HOME") .. "/.config/awesome/themes/multicolor"
