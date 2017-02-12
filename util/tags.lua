@@ -34,7 +34,7 @@ tyrannical.tags = {
         exclusive   = true,
         screen      = 1,
         layout      = awful.layout.suit.max,
-        class       = {"Okular", "xpdf", "Xpdf", "Subl"}
+        class       = {"Subl"}
     },
     {
         name        = "",
@@ -43,7 +43,7 @@ tyrannical.tags = {
         screen      = 1,
         force_screen = true,
         layout      = awful.layout.suit.max,
-        class = {"Vlc", "bomi", "Freetuxtv"}
+        class = {"Vlc", "bomi", "Freetuxtv", "mpv"}
     },
     {
         name        = "",
@@ -52,7 +52,7 @@ tyrannical.tags = {
         screen      = {1,2}, --screen.count()>1 and 2 or 1,
         layout      = awful.layout.suit.max,
         --exec_once   = {"dolphin"}, --When the tag is accessed for the first time, execute this command
-        class  = {"Thunar", "Konqueror", "Dolphin", "ark", "Nautilus", "Doublecmd"}
+        class  = {"Thunar", "Konqueror", "Dolphin", "ark", "Nautilus", "Doublecmd", "pcmanfm-qt"}
     },
     {
         name        = "",
@@ -61,6 +61,14 @@ tyrannical.tags = {
         screen      = 1,
         layout      = awful.layout.suit.floating,
         class = {"Kate", "KDevelop", "Codeblocks", "Code::Blocks" , "DDD", "kate4"}
+    },
+    {
+        name        = "",
+        init        = false,
+        exclusive   = true,
+        screen      = 1,
+        layout      = awful.layout.suit.floating,
+        class = {"lximage-qt", "XnViewMP", "Okular", "xpdf", "Xpdf", "Hotshots"}
     },
     {
         name        = "",
@@ -97,6 +105,15 @@ tyrannical.tags = {
         force_screen = true,
         layout      = awful.layout.suit.max,
         class = {"Audacious"}
+    },
+    {
+        name        = "",
+        init        = false,
+        exclusive   = true,
+        screen      = 2,
+        force_screen = true,
+        layout      = awful.layout.suit.tile,
+        class       = {"Skype", "TelegramDesktop", "Mumble"}
     },
 }
 
