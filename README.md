@@ -1,1 +1,1 @@
-awesome-copycats
+awesome wm
