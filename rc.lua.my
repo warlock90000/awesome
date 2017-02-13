@@ -70,7 +70,7 @@ local terminal   = "qterminal" or "konsole"
 local editor     = os.getenv("EDITOR") or "subl" or "vi"
 os.setlocale(os.getenv("LANG"))
 -- user defined
-local browser    = "firefox"
+local browser    = "palemoon"
 local gui_editor = "subl"
 local graphics   = "xnview"
 -- }}}
@@ -476,6 +476,7 @@ awful.rules.rules = {
       properties = { border_width = beautiful.border_width,
                      border_color = beautiful.border_normal,
                      focus = awful.client.focus.filter,
+                     border_width = 0,
                      raise = true,
                      keys = clientkeys,
                      buttons = clientbuttons,

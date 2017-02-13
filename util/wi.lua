@@ -226,16 +226,16 @@ pkg_upd_vicious = wibox.widget.textbox()
     vicious.register(pkg_upd_vicious, vicious.widgets.pkg, "$1", 1000, "Arch")
 --========= PKG =========--
 --========= Coretemp =========--
-local tempicon = wibox.widget.imagebox(beautiful.widget_temp)
-local temp = lain.widget.temp({
+tempicon = wibox.widget.imagebox(beautiful.widget_temp)
+temp = lain.widget.temp({
     settings = function()
         widget:set_markup(markup.font("Hack 9", markup("#f1af5f", coretemp_now .. "°C ")))
     end
 })
 --========= Coretemp =========--
 --========= Net =========--
-local netdowninfo = wibox.widget.textbox()
-local netupinfo = lain.widget.net({
+netdowninfo = wibox.widget.textbox()
+netupinfo = lain.widget.net({
     settings = function()
         if iface ~= "network off" and
            string.match(myweather.widget.text, "N/A")
