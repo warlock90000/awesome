@@ -18,27 +18,29 @@ tyrannical.tags = {
         exclusive   = true,                   -- Refuse any other type of clients (by classes)
         screen      = 1,                  -- Create this tag on screen 1 and screen 2
         layout      = awful.layout.suit.tile, -- Use the tile layout
-        class       = {"konsole", "terminator", "qterminal"}
+        class       = {"konsole", "terminator", "qterminal", "urxvt", "URxvt"}
     },
+    --[[
     {
-        name        = "2:",
+        name        = "",
         init        = false,
         exclusive   = true,
         screen      = {1,2},
         layout      = awful.layout.suit.tile,
         class       = {"urxvt", "URxvt"}
     },
+    ]]--
     {
         name        = "",
         init        = true,
         exclusive   = true,
         screen      = 1,
         layout      = awful.layout.suit.max,
-        class       = {"Subl"}
+        class       = {"Subl", "Subl3"}
     },
     {
         name        = "",
-        init        = false,
+        init        = true,
         exclusive   = true,
         screen      = 1,
         force_screen = true,
@@ -68,11 +70,12 @@ tyrannical.tags = {
         exclusive   = true,
         screen      = 1,
         layout      = awful.layout.suit.floating,
-        class = {"lximage-qt", "XnViewMP", "Okular", "xpdf", "Xpdf", "Hotshots"}
+        class = {"lximage-qt", "XnViewMP", "Okular", "xpdf", "Xpdf", "Hotshots", "Photoshop.exe"}
     },
+    --- Screen 2
     {
         name        = "",
-        init        = false,
+        init        = true,
         exclusive   = true,
         screen      = 2,
         force_screen = true,
@@ -81,7 +84,7 @@ tyrannical.tags = {
     },
     {
         name        = "",
-        init        = false,
+        init        = true,
         exclusive   = true,
         screen      = 2,
         force_screen = true,
@@ -90,12 +93,12 @@ tyrannical.tags = {
     },
     {
         name        = "",
-        init        = false,
+        init        = true,
         exclusive   = true,
         screen      = 2,
         force_screen = true,
-        layout      = awful.layout.suit.max,
-        class = {"ktorrent"}
+        layout      = awful.layout.suit.tile,
+        class = {"ktorrent", "Transgui"}
     },
     {
         name        = "",

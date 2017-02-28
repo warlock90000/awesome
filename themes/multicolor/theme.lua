@@ -29,6 +29,7 @@ theme.menu_fg_focus                             = "#155D93"
 theme.menu_bg_normal                            = "#3d3d3e"
 theme.menu_bg_focus                             = "#202020"
 
+theme.tooltip_bg                                = "#3d3d3eb5"
 theme.widget_bg                                 = "#3d3d3eb5" -- 155D93b5
 theme.widget_font_color                         = "#67aead"
 theme.clock_font_color                          = "#de5e1e"

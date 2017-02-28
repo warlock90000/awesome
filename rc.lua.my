@@ -8,7 +8,7 @@ local naughty       = require("naughty")
 local lain          = require("lain")
 local freedesktop   = require("freedesktop")
 local hotkeys_popup = require("awful.hotkeys_popup").widget
-local pulseaudio    = require("util.pulseaudio")
+local pulse_audio    = require("util.pulseaudio")
 local tyrannical = require("tyrannical")
 local vicious       = require("vicious")
 --local vicious_contrib = require("vicious.contrib")
@@ -46,13 +46,20 @@ local function run_once(cmd)
   awful.spawn.with_shell(string.format("pgrep -u $USER -x %s > /dev/null || (%s)", findme, cmd))
 end
 
-run_once("qterminal")
-run_once("subl")
-run_once("/home/jacka/bin/start.sh &")
-
 -- {{{ Compositing
-awful.util.spawn_with_shell("xcompmgr -r 12.00 -o 0.75 -l 15.00 -t 15.00 -I 0.028 -O 0.03 -D 10.0 -c -C -F -n &")
+awful.spawn.with_shell("compton &")
 -- }}}
+
+awful.spawn.with_shell("hsetroot -solid \"#000000\"")
+--awful.spawn.with_shell("compton -cCfF -t-5 -l-5 -o.55 -D2 -m.85 --backend glx &")
+--awful.spawn.with_shell("xcompmgr -r 12.00 -o 0.75 -l 15.00 -t 15.00 -I 0.028 -O 0.03 -D 10.0 -c -C -F -n &")
+
+--run_once("qterminal")
+run_once("urxvtd &")
+--run_once("subl")
+
+--run_once("~/bin/start.sh &")
+
 -- {{{ SlideShow
 wp_handle = require("util.wp_slideshow"):new("/home/jacka/Pictures/art/222/", "fit", 180)
 wp_handle:run()
@@ -66,7 +73,7 @@ beautiful.init(awful.util.get_configuration_dir() .. "/themes/multicolor/theme.l
 local modkey     = "Mod4"
 local altkey     = "Mod1"
 local altkey1     = "Control_L"
-local terminal   = "qterminal" or "konsole"
+local terminal   = "urxvtc" or "qterminal"
 local editor     = os.getenv("EDITOR") or "subl" or "vi"
 os.setlocale(os.getenv("LANG"))
 -- user defined
@@ -108,7 +115,7 @@ lain.layout.termfair.center.ncol    = 1
 local tags = require("util.tags")
 local wi = require("util.wi")
 
-
+local script = awful.util.get_configuration_dir() .. "/util/script/"
 
 -- {{{ Menu
 local myawesomemenu = {
@@ -117,17 +124,26 @@ local myawesomemenu = {
     { "edit config", string.format("%s -e %s %s", terminal, editor, awesome.conffile) }
 }
 local myexit = {
-    { "Shutdown", function() awful.util.spawn("kdesu systemctl poweroff")     end },
-    { "Reboot",   function() awful.util.spawn("kdesu systemctl reboot")       end },
-    { "Suspend",  function() awful.util.spawn("kdesu systemctl suspend")      end },
-    { "Sleep",    function() awful.util.spawn("kdesu systemctl hybrid-sleep") end },
+    { "Shutdown", function() awful.util.spawn("systemctl poweroff")     end },
+    { "Reboot",   function() awful.util.spawn("systemctl reboot")       end },
+    { "Suspend",  function() awful.util.spawn("systemctl suspend")      end },
+    { "Sleep",    function() awful.util.spawn("systemctl hybrid-sleep") end },
     { "Logout",   function() awesome.quit()                             end },
     { "Restart Awesome", awesome.restart }
 }
+local wine = {
+    { "TC_Aion", function() awful.util.spawn(script .. "tc_aion")  end },
+    { "TC",   function() awful.util.spawn(script .. "tc") end },
+    { "Photoshop CS6 x32",  function() awful.util.spawn(script .. "p_shop") end },
+    { "Aion",    function() awful.util.spawn(script .. "aion") end },
+    { "Tera",    function() awful.util.spawn(script .. "tera") end },
+    { "Rift",    function() awful.util.spawn(script .. "rift") end },
+}
 local mymainmenu = freedesktop.menu.build({
     before = {
-        { "Awesome", myawesomemenu, beautiful.awesome_icon },
-        { "Exit", myexit, beautiful.awesome_icon },
+        { "Wine", wine, beautiful.awesome_icon },
+        { "Exit", myexit, beautiful.launcher_icon },
+        { "Awesome", myawesomemenu, beautiful.launcher_icon },
         -- other triads can be put here
     },
     after = {
@@ -148,6 +164,12 @@ root.buttons(awful.util.table.join(
     awful.button({ }, 4, awful.tag.viewnext),
     awful.button({ }, 5, awful.tag.viewprev)
 ))
+
+awful.mouse.snap.edge_enabled     = false
+--awful.mouse.snap.client_enabled = false
+-- перетащить окно на соседний тэг мышью
+awful.mouse.drag_to_tag.enabled   = true
+
 -- }}}
 pkg_upd_vicious:buttons(
     awful.button({ }, 1, function () awful.util.spawn('uxterm -geometry 90x10 -T Updating -e bash -c "sudo yaourt -Sy && pauseme"') end)
@@ -298,7 +320,7 @@ globalkeys = awful.util.table.join(
     awful.key({ altkey, }, "w", function () myweather.show(7) end),
 
     -- Audio
-    awful.key({ modkey, "Shift"}, "p", function () pulseaudio.cycle_devices(); volumewidget.markup = pulseaudio.volume_info_c() end),
+    awful.key({ modkey, "Shift"}, "p", function () pulse_audio.cycle_devices(); volumewidget.markup = pulseaudio.volume_info_c() end),
     awful.key({}, "XF86AudioMute", function() pulseaudio.volume_mute(); volumewidget.markup = pulseaudio.volume_info_c() end),
     awful.key({}, "XF86AudioLowerVolume", function() pulseaudio.volume_change("-3db"); volumewidget.markup = pulseaudio.volume_info_c(); volumewidget1.value = pulseaudio.volume_info_for_bar() end),
     awful.key({}, "XF86AudioRaiseVolume", function() pulseaudio.volume_change("+3db"); volumewidget.markup = pulseaudio.volume_info_c(); volumewidget1.value = pulseaudio.volume_info_for_bar() end),
@@ -327,7 +349,7 @@ globalkeys = awful.util.table.join(
     --]]
 
     -- Copy primary to clipboard
-    awful.key({ modkey }, "c", function () os.execute("xsel | xsel -b") end),
+    --awful.key({ modkey }, "c", function () os.execute("xsel | xsel -b") end),
 
     -- User programs
     awful.key({ modkey }, "q", function () awful.spawn(browser) end),
@@ -576,3 +598,4 @@ client.connect_signal("focus",
     end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 -- }}}
+ tt = awful.tag[1]

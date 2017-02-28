@@ -23,16 +23,32 @@ local function client_menu_toggle_fn()
 end
 -- }}}
 
+local dockshape = function(cr, width, height)
+    gears.shape.partially_rounded_rect(cr, width, height, true, true, true, true, 8)
+end
+
+local lspace1 = wibox.widget.textbox()
+local lspace2 = wibox.widget.textbox()
+local lspace3 = wibox.widget.textbox()
+local lspace4 = wibox.widget.textbox()
+local lspace5 = wibox.widget.textbox()
+lspace1.forced_height = 10
+lspace2.forced_height = 16
+lspace3.forced_height = 18
+lspace4.forced_height = 2
+lspace5.forced_height = 5
+
 -- {{{ Wibox
 -- Create a wibox for each screen and add it
 
 taglist_buttons = awful.util.table.join(
                     awful.button({ }, 1, function(t) t:view_only() end),
-                    awful.button({ modkey }, 1, function(t)
+ --[[                   awful.button({ modkey }, 1, function(t)
                                               if client.focus then
                                                   client.focus:move_to_tag(t)
                                               end
                                           end),
+                                          ]]--
                     awful.button({ }, 3, awful.tag.viewtoggle),
                     awful.button({ modkey }, 3, function(t)
                                               if client.focus then
@@ -82,6 +98,7 @@ awful.screen.connect_for_each_screen(function(s)
                            awful.button({ }, 3, function () awful.layout.inc(-1) end),
                            awful.button({ }, 4, function () awful.layout.inc( 1) end),
                            awful.button({ }, 5, function () awful.layout.inc(-1) end)))
+
     -- Create a taglist widget
     s.mytaglist = awful.widget.taglist(s, awful.widget.taglist.filter.all, taglist_buttons)
 
@@ -297,6 +314,7 @@ awful.screen.connect_for_each_screen(function(s)
               bottom = 0,
               widget = wibox.container.margin
             },
+--[[
             {
               {
                 {
@@ -369,6 +387,7 @@ awful.screen.connect_for_each_screen(function(s)
               bottom = 0,
               widget = wibox.container.margin
             },
+]]--
             {
               {
                 {
@@ -381,7 +400,7 @@ awful.screen.connect_for_each_screen(function(s)
                   bottom = 0,
                   widget = wibox.container.margin
                 },
-                bg = beautiful.base02,
+                bg = beautiful.base03,
                 set_shape = function(cr, width, height)
                   gears.shape.rounded_bar(cr, width, height, (height / 2) * (-1))
                 end,
@@ -405,7 +424,7 @@ awful.screen.connect_for_each_screen(function(s)
                   bottom = 0,
                   widget = wibox.container.margin
                 },
-                bg = beautiful.base03,
+                bg = beautiful.base02,
                 set_shape = function(cr, width, height)
                   gears.shape.rounded_bar(cr, width, height)
                 end,
@@ -459,6 +478,229 @@ awful.screen.connect_for_each_screen(function(s)
             s.mylayoutbox,
         },
     }
+
+       --------------------------- Create the vertical wibox
+    s.dockheight = (40 *  s.workarea.height)/100
+
+    s.dock_wibox = wibox({ screen = s, x=0, y=s.workarea.height/2 - s.dockheight/2, width = 300, height = s.dockheight, fg = beautiful.menu_fg_normal, bg = beautiful.widget_bg, ontop = true, visible = true, type = "dock" })
+
+    if s.index > 1 and s.dock_wibox.y == 0 then
+        s.dock_wibox.y = screen[1].dock_wibox.y
+    end
+
+    -- Add widgets to the vertical wibox
+    s.dock_wibox:setup {
+        layout = wibox.layout.fixed.vertical,
+        lspace3,
+        { -- Память текст
+            layout = wibox.layout.align.horizontal,
+            mem_txt,
+        },
+        lspace4,
+        { -- Память график
+            layout = wibox.layout.align.horizontal,
+            mem_graph,
+        },
+        lspace5,
+        { -- Проц ntrcn
+            layout = wibox.layout.flex.horizontal,
+            cpu.widget,
+            temp,
+            cpu_graph,
+        },
+        lspace5,
+        cpu_txt,
+        { -- Проц бары
+            layout = wibox.layout.fixed.horizontal,
+            cpu_scale_0,
+            cpu_scale_1,
+            cpu_scale_2,
+            cpu_scale_3,
+        },
+        lspace5,
+        { -- Проц графики
+          { -- цпу1 граф
+            {
+              widget = cpugraph0,
+            },
+              left   = 7,
+              right  = 0,
+              top    = 0,
+              bottom = 0,
+              widget = wibox.container.margin
+          },
+          { -- цпу1 текст
+              cpupct0,
+              layout = wibox.container.rotate(cpupct0, 'east'),
+          },
+          { -- цпу2 граф
+            {
+              widget = cpugraph1,
+            },
+              left   = 7,
+              right  = 0,
+              top    = 0,
+              bottom = 0,
+              widget = wibox.container.margin
+          },
+          { -- цпу2 текст
+              cpupct1,
+              layout = wibox.container.rotate(cpupct1, 'east'),
+          },
+          { -- цпу3 граф
+            {
+              widget = cpugraph2,
+            },
+              left   = 7,
+              right  = 0,
+              top    = 0,
+              bottom = 0,
+              widget = wibox.container.margin
+          },
+          { -- цпу3 текст
+              cpupct2,
+              layout = wibox.container.rotate(cpupct2, 'east'),
+          },
+          { -- цпу4 граф
+            {
+              widget = cpugraph3,
+            },
+              left   = 7,
+              right  = 0,
+              top    = 0,
+              bottom = 0,
+              widget = wibox.container.margin
+          },
+          { -- цпу4 текст
+              cpupct3,
+              layout = wibox.container.rotate(cpupct3, 'east'),
+          },
+          layout  = wibox.layout.fixed.horizontal
+        },
+        lspace5,
+        { -- Сеть текст
+          {
+            widget = net_vicious,
+          },
+            left   = 5,
+            right  = 0,
+            top    = 0,
+            bottom = 0,
+            widget = wibox.container.margin
+        },
+        lspace5,
+        { -- Сеть граф
+          { -- Сеть граф загр
+            {
+              widget = net_raph_d,
+            },
+              left   = 7,
+              right  = 0,
+              top    = 0,
+              bottom = 0,
+              widget = wibox.container.margin
+          },
+          { -- Сеть граф отдача
+            {
+              widget = net_raph_u,
+            },
+              left   = 7,
+              right  = 0,
+              top    = 0,
+              bottom = 0,
+              widget = wibox.container.margin
+          },
+          layout  = wibox.layout.fixed.horizontal,
+        },
+        lspace5,
+        { -- / текст
+            layout = wibox.layout.align.horizontal,
+            fstext_r,
+        },
+        { -- / бар
+            layout = wibox.layout.align.horizontal,
+            fsbar_r,
+        },
+        { -- /home текст
+            layout = wibox.layout.align.horizontal,
+            fstext_h,
+        },
+        { -- /home бар
+            layout = wibox.layout.align.horizontal,
+            fsbar_h,
+        },
+--[[
+        {
+          {
+            {
+              widget = cpugraph0,
+            },
+              left   = 2,
+              right  = 160,
+              top    = 10,
+              bottom = 10,
+              widget = wibox.container.margin
+          },
+          {
+            {
+              widget = cpupct0,
+            },
+              left   = -150,
+              right  = 0,
+              top    = 0,
+              bottom = 0,
+              widget = wibox.container.margin
+          },
+                left   = 0,
+                right  = 0,
+                top    = 0,
+                bottom = 0,
+                widget = wibox.container.margin
+        },
+]]--
+    }
+
+    -- Add toggling functionalities
+    s.docktimer = gears.timer{ timeout = 3 }
+    s.dock_wibox_timer = gears.timer{ timeout = 3 }
+
+    s.docktimer:connect_signal("timeout", function()
+        s = awful.screen.focused()
+        s.dock_wibox.width = 1
+        if not s.docktimer.started then
+            s.docktimer:start()
+        end
+        s.docktimer:stop()
+    end)
+--[[
+    tag.connect_signal("property::selected", function(t)
+        s = t.screen or awful.screen.focused()
+        s.dock_wibox.width = 300
+        gears.surface.apply_shape_bounding(s.dock_wibox, dockshape)
+        s.docktimer = gears.timer{ timeout = 10 }
+        if not s.docktimer.started then
+            s.docktimer:start()
+        end
+    end)
+]]--
+    s.dock_wibox:connect_signal("mouse::leave", function()
+        s = awful.screen.focused()
+        s.dock_wibox.width = 1
+    end)
+
+    s.dock_wibox:connect_signal("mouse::enter", function()
+        s = awful.screen.focused()
+        s.dock_wibox.width = 300
+        gears.surface.apply_shape_bounding(s.dock_wibox, dockshape)
+          s.dock_wibox_timer:connect_signal("timeout", function()
+            s.dock_wibox.width = 1
+            if not s.dock_wibox_timer.started then
+                s.dock_wibox_timer:start()
+            end
+          end)
+          s.dock_wibox_timer:stop()
+    end)
+    ------------------------------
 
 end)
 -- }}}
