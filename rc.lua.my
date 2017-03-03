@@ -141,8 +141,8 @@ local wine = {
 }
 local mymainmenu = freedesktop.menu.build({
     before = {
-        { "Wine", wine, beautiful.awesome_icon },
         { "Exit", myexit, beautiful.launcher_icon },
+        { "Wine", wine, beautiful.awesome_icon },
         { "Awesome", myawesomemenu, beautiful.launcher_icon },
         -- other triads can be put here
     },

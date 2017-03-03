@@ -7,14 +7,26 @@ local naughty       = require("naughty")
 local lain          = require("lain")
 local pulseaudio    = require("pulseaudio")
 local vicious       = require("vicious")
+vicious.contrib = require("vicious.contrib")
+--local blingbling    = require("blingbling")
 
 local markup = lain.util.markup
 
 local color1 = "<span color=\"#87af5f\">"
 local color2 = "<span color=\"#e54c62\">"
 local color3 = "<span color=\"#ffffff\">"
+local color4 = "<span color=\"#67aead\">"
+local color5 = "<span color=\"#4682b4\">"
+local color6 = "<span color=\"#bf3eff\">"
+
 local font1 = "<span font=\"Terminus Re33 Bold 13\">"
+local font2 = "<span font=\"Terminus Re33 Bold 11\">"
 local span_end = "</span>"
+
+function math_round( roundIn , roundDig ) -- первый аргумент - число которое надо округлить, второй аргумент - количество символов после запятой.
+     local mul = math.pow( 10, roundDig )
+     return ( math.floor( ( roundIn * mul ) + 0.5 )/mul )
+end
 
 -- {{{ Keyboard layout widget
 kbdcfg = {}
@@ -32,6 +44,15 @@ dbus.connect_signal("ru.gentoo.kbdd", function(...)
     end
 )
 -- }}}
+--========= base =========--
+sys = wibox.widget.textbox()
+vicious.register(sys, vicious.widgets.os, color5.."$1 $2"..span_end, 600)
+uptime = wibox.widget.textbox()
+vicious.register(uptime, vicious.widgets.uptime,
+    function (widget, args)
+      return string.format(color6.."Up: %2dd %02d:%02d "..span_end, args[1], args[2], args[3])
+    end, 61)
+--========= base =========--
 --========= Textclock =========--
 mytextclock = wibox.widget.textclock(markup.font("Terminus Re33 Bold 18", markup(beautiful.clock_font_color, " %H:%M ")))
 myclock_t = awful.tooltip({
@@ -102,7 +123,7 @@ fs_r = lain.widget.fs({
     options = "--exclude-type=tmpfs",
     notification_preset = { fg = beautiful.fg_normal, bg = beautiful.bg_normal, font = beautiful.font },
     settings  = function()
-        fstext_r:set_text("  Root " .. fs_now.used_gb.."/"..fs_now.available_gb.. " (Gb)")
+        fstext_r:set_text(" Root " .. fs_now.used_gb.."/"..fs_now.available_gb)
         if tonumber(fs_now.used) < 90 then
             fsbar_r:set_color({
                         type = "linear",
@@ -153,7 +174,7 @@ fs_h = lain.widget.fs({
     partition = "/home",
     options = "--exclude-type=tmpfs",
     settings  = function()
-        fstext_h:set_text("  Home " .. fs_now.used_gb.."/"..fs_now.available_gb.. " (Gb)")
+        fstext_h:set_text(" Home " .. fs_now.used_gb.."/"..fs_now.available_gb)
         if tonumber(fs_now.used) < 90 then
           fsbar_h:set_color({
                         type = "linear",
@@ -180,10 +201,16 @@ fs_h = lain.widget.fs({
           fsbar_h:set_value(fs_now.used / 100)
         end
     })
+vicious.cache(vicious.widgets.dio)
+fs_stat_r = wibox.widget.textbox()
+vicious.register(fs_stat_r, vicious.widgets.dio, '<span color="#4682b4">R:${sdb7 read_mb}</span>/<span color="#bf3eff">W:${sdb7 write_mb}</span>', 1)
+fs_stat_h = wibox.widget.textbox()
+vicious.register(fs_stat_h, vicious.widgets.dio, '<span color="#4682b4">R:${sdb3 read_mb}</span>/<span color="#bf3eff">W:${sdb3 write_mb}</span>', 1)
+
 --========= fs =========--
 --========= CPU =========--
 vicious.cache(vicious.widgets.cpu)
-
+--[[
 cpu_graph = wibox.widget {
             forced_height    = 15,
             forced_width     = 120,
@@ -192,9 +219,9 @@ cpu_graph = wibox.widget {
                                   from = { 0, 25 },
                                   to = { 0, 0 },
                                   stops = {
-                                    { 0, "#b58900" },
-                                    { 0.25, "#dc322f" },
-                                    { 1, "#268bd2" }
+                                    { 0, "#268bd2" },
+                                    { 0.25, "#b58900" },
+                                    { 1, "#dc322f" }
                                   }
                                 }),
             background_color = beautiful.widget_bg,
@@ -202,17 +229,31 @@ cpu_graph = wibox.widget {
             max_value        = 100,
             widget        = wibox.widget.graph,
 }
+]]--
+cpufreq_vicious = wibox.widget.textbox()
+vicious.register(cpufreq_vicious, vicious.widgets.cpufreq,
+  function (widget,args)
+    cpufreq_vicious:set_text(args[5].." "..math.floor(args[1]).."Mhz")
+  end , 1, "cpu0")
+
+temp_cpu = lain.widget.temp({
+    tempfile = "/sys/class/hwmon/hwmon2/temp1_input",
+    settings  = function()
+        widget:set_markup(color1.. " " ..coretemp_now .. "°C"..span_end)
+    end
+})
+
 cpu_scale_0 = wibox.widget {
             forced_height    = 10,
             forced_width     = 75,
             color            = ({
                                   type = "linear",
-                                  from = { 0, 25 },
+                                  from = { 0, 7 },
                                   to = { 0, 0 },
                                   stops = {
-                                    { 0, "#b58900" },
-                                    { 0.5, "#dc322f" },
-                                    { 1, "#268bd2" }
+                                    { 0, "#00B52A" },
+                                    { 0.5, "#1E8B22" },
+                                    { 1, "#B87912" }
                                   }
                                 }),
             background_color = beautiful.widget_bg,
@@ -220,7 +261,7 @@ cpu_scale_0 = wibox.widget {
             paddings         = 1,
             ticks            = true,
             ticks_size       = 3,
-            max_value        = 100,
+            --max_value        = 100,
             widget        = wibox.widget.progressbar,
 }
 cpu_scale_1 = wibox.widget {
@@ -228,12 +269,12 @@ cpu_scale_1 = wibox.widget {
             forced_width     = 75,
             color            = ({
                                   type = "linear",
-                                  from = { 0, 25 },
+                                  from = { 0, 7 },
                                   to = { 0, 0 },
                                   stops = {
-                                    { 0, "#b58900" },
-                                    { 0.25, "#dc322f" },
-                                    { 1, "#268bd2" }
+                                    { 0, "#00B52A" },
+                                    { 0.5, "#1E8B22" },
+                                    { 1, "#B87912" }
                                   }
                                 }),
             background_color = beautiful.widget_bg,
@@ -241,7 +282,7 @@ cpu_scale_1 = wibox.widget {
             paddings         = 1,
             ticks            = true,
             ticks_size       = 3,
-            max_value        = 100,
+            --max_value        = 100,
             widget        = wibox.widget.progressbar,
 }
 cpu_scale_2 = wibox.widget {
@@ -249,12 +290,12 @@ cpu_scale_2 = wibox.widget {
             forced_width     = 75,
             color            = ({
                                   type = "linear",
-                                  from = { 0, 25 },
+                                  from = { 0, 7 },
                                   to = { 0, 0 },
                                   stops = {
-                                    { 0, "#b58900" },
-                                    { 0.25, "#dc322f" },
-                                    { 1, "#268bd2" }
+                                    { 0, "#00B52A" },
+                                    { 0.5, "#1E8B22" },
+                                    { 1, "#B87912" }
                                   }
                                 }),
             background_color = beautiful.widget_bg,
@@ -262,7 +303,7 @@ cpu_scale_2 = wibox.widget {
             paddings         = 1,
             ticks            = true,
             ticks_size       = 3,
-            max_value        = 100,
+            --max_value        = 100,
             widget        = wibox.widget.progressbar,
 }
 cpu_scale_3 = wibox.widget {
@@ -270,12 +311,12 @@ cpu_scale_3 = wibox.widget {
             forced_width     = 75,
             color            = ({
                                   type = "linear",
-                                  from = { 0, 25 },
+                                  from = { 0, 7 },
                                   to = { 0, 0 },
                                   stops = {
-                                    { 0, "#b58900" },
-                                    { 0.25, "#dc322f" },
-                                    { 1, "#268bd2" }
+                                    { 0, "#00B52A" },
+                                    { 0.5, "#1E8B22" },
+                                    { 1, "#B87912" }
                                   }
                                 }),
             background_color = beautiful.widget_bg,
@@ -283,26 +324,46 @@ cpu_scale_3 = wibox.widget {
             paddings         = 1,
             ticks            = true,
             ticks_size       = 3,
-            max_value        = 100,
+            --max_value        = 100,
             widget        = wibox.widget.progressbar,
 }
 
 cpu_txt = wibox.widget{
-      markup   = color2 .. "   CPU1     CPU2      CPU3     CPU4" .. span_end,
+      markup   = color2 .. "   CPU1     CPU2     CPU3     CPU4" .. span_end,
+      widget = wibox.widget.textbox,
+      font   = "Terminus Re33 Bold 11",
+}
+cpu = wibox.widget{
       widget = wibox.widget.textbox,
       font   = "Terminus Re33 Bold 11",
 }
 
-cpu = lain.widget.cpu({
-    settings = function()
-        widget:set_markup(markup.font("Terminus Re33 Bold 13", markup(beautiful.widget_font_color, "  " .. cpu_now.usage .. "% ")))
-        cpu_graph:add_value(cpu_now[0].usage)
-        cpu_scale_0:set_value(cpu_now[0].usage)
-        cpu_scale_1:set_value(cpu_now[1].usage)
-        cpu_scale_2:set_value(cpu_now[2].usage)
-        cpu_scale_3:set_value(cpu_now[3].usage)
-    end
-})
+vicious.register(cpu, vicious.widgets.cpu,
+  function (widget,args)
+    cpu:set_text("  " .. args[1] .. "% ")
+    --cpu_graph:add_value(args[1])
+  end , 1 )
+
+vicious.register(cpu_scale_0, vicious.widgets.cpu,
+  function (widget,args)
+    cpu_scale_0:set_value(args[2])
+    return args[2]
+  end , 1 )
+vicious.register(cpu_scale_1, vicious.widgets.cpu,
+  function (widget,args)
+    cpu_scale_1:set_value(args[3])
+    return args[3]
+  end , 1 )
+vicious.register(cpu_scale_2, vicious.widgets.cpu,
+  function (widget,args)
+    cpu_scale_2:set_value(args[4])
+    return args[4]
+  end , 1 )
+vicious.register(cpu_scale_3, vicious.widgets.cpu,
+  function (widget,args)
+    cpu_scale_3:set_value(args[5])
+    return args[5]
+  end , 1 )
 --================
 cpupct0 = wibox.widget.textbox()
 vicious.register(cpupct0, vicious.widgets.cpu, "$2%", 2)
@@ -407,37 +468,11 @@ cpugraph3 = wibox.widget {
             widget        = wibox.widget.graph,
 }
 vicious.register(cpugraph3, vicious.widgets.cpu, "$5")
---================
----------- cpu freq
-local function cpufreq(whichcpu)
-  local file = io.open("/sys/devices/system/cpu/" .. whichcpu .. "/cpufreq/scaling_cur_freq", "r")
-  local cpufreq = file:read("*n")
-  file:close()
-  return cpufreq / 1000
-end
----------- cputmp()
-local function cputemp()
-  local file = io.open("/sys/class/hwmon/hwmon2/temp1_input", "r")
-  local output = file:read("*n")
-  file:close()
-  return output / 1000
-end
----------- cpugov()
-local helpers = require("vicious.helpers")
-local function cpugov(warg)
-    local _cpufreq = helpers.pathtotable("/sys/devices/system/cpu/"..warg.."/cpufreq")
-    local governor_state = {
-       ["ondemand\n"]     = "↯",
-       ["powersave\n"]    = "⌁",
-       ["userspace\n"]    = "¤",
-       ["performance\n"]  = "⚡",
-       ["conservative\n"] = "⊚"
-    }
-    local governor = _cpufreq.scaling_governor
-    governor = governor_state[governor] or governor or "N/A"
 
-    return governor
-end
+process_htop = awful.widget.watch("bash -c '/bin/ps --sort -c,-s -eo fname,user,%cpu,%mem,pid | /usr/bin/head'", 3)
+  process_htop:set_font("Terminus Re33 Bold 11")
+
+--[[  ------------------------------------ tooltip
 ---------- cpu popup
 mycpu_t = awful.tooltip({
          objects = { cpu.widget },
@@ -455,16 +490,8 @@ mycpu_t = awful.tooltip({
 mycpu_t:set_shape(function(cr, width, height)
     gears.shape.infobubble(cr, width, height, corner_radius, arrow_size, width - 220)
 end)
---blingbling.popups.htop(cpu.widget, { title_color = white, user_color = black, root_color = black})
---========= CPU =========--font   = "xos4 Terminus Bold 12",
---========= Coretemp =========--
-
-temp = wibox.widget{
-      markup   = color1 .. " " .. cputemp() .. " °C".. span_end,
-      widget = wibox.widget.textbox,
-      font   = "Terminus Re33 Bold 11",
-}
---========= Coretemp =========--
+]]------------------------------------
+--========= CPU =========
 --========= Mem =========--
 vicious.cache(vicious.widgets.mem)
 
@@ -472,7 +499,7 @@ mem_txt = wibox.widget {
         widget = wibox.widget.textbox,
         font = "Terminus Re33 Bold 11",
   }
-vicious.register(mem_txt, vicious.widgets.mem, ("  Use:$2Mb Tot:$3Mb Free:$4Mb"))
+vicious.register(mem_txt, vicious.widgets.mem, "  Use:$2Mb Tot:$3Mb Free:$4Mb", 5)
 
 mem_graph = wibox.widget {
             forced_height    = 15,
@@ -594,14 +621,9 @@ pkg_upd_vicious = wibox.widget.textbox()
 --========= PKG =========--
 --========= Net =========--
 vicious.cache(vicious.widgets.net)
-local color1 = "<span color=\"#87af5f\">"
-local color2 = "<span color=\"#e54c62\">"
-local color3 = "<span color=\"#ffffff\">"
-local font1 = "<span font=\"Terminus Re33 Bold 11\">"
-local span_end = "</span>"
 
 net_vicious = wibox.widget.textbox()
-vicious.register(net_vicious, vicious.widgets.net, color1.."⬇ "..span_end..font1.."${enp3s0 rx_mb}M".." ✦ ".."${enp3s0 down_kb}K"..span_end..color3.." ✦ "..span_end..color2.."⬆ "..span_end..font1.."${enp3s0 tx_mb}M".." ✦ ".."${enp3s0 up_kb}K"..span_end, 1)
+vicious.register(net_vicious, vicious.widgets.net, color1.."⬇ "..span_end..font2.."${enp3s0 rx_mb}M".." ✦ ".."${enp3s0 down_kb}K"..span_end..color3.." ✦ "..span_end..color2.."⬆ "..span_end..font2.."${enp3s0 tx_mb}M".." ✦ ".."${enp3s0 up_kb}K"..span_end, 1)
 
 
 net_raph_d = wibox.widget {
@@ -645,14 +667,68 @@ net_raph_u = wibox.widget {
                                   from = { 0, 25 },
                                   to = { 0, 0 },
                                   stops = {
-                                    { 0, "#b58900" },
-                                    { 0.25, "#dc322f" },
-                                    { 1, "#268bd2" }
+                                    { 0, "#268bd2" },
+                                    { 0.25, "#b58900" },
+                                    { 1, "#dc322f" }
                                           }
                                 }),
             widget        = wibox.widget.graph,
 }
 vicious.register(net_raph_u, vicious.widgets.net, "${enp3s0 up_kb}", 1)
+--=======
+-- vnstat_image notification
+local vnstat_image = {}
+vnstat_image.notification = nil
+local eth_if = "enp3s0"
+local conn_stat = nil
+
+function vnstat_image:hide()
+    if self.notification ~= nil then
+        naughty.destroy(self.notification)
+        self.notification = nil
+    end
+end
+
+function vnstat_image:show()
+    self:hide()
+    os.execute( 'LC_ALL=C vnstati -vs -ne -i ' .. eth_if .. ' -o /tmp/vnstat_summary.png' )
+    local net_summary       = "/tmp/vnstat_summary.png"
+    self.notification = naughty.notify({
+    icon = net_summary,
+    position = 'top_left',
+    timeout = 20,
+    })
+end
+
+function vnstat_image:show1()
+    self:hide()
+    os.execute( 'LC_ALL=C vnstati -t -ne -i ' .. eth_if .. ' -o /tmp/vnstat_summary_h.png' )
+    local net_summary_h     = "/tmp/vnstat_summary_h.png"
+    self.notification = naughty.notify({
+    icon = net_summary_h,
+    position = 'top_left',
+    timeout = 20,
+    })
+end
+
+function vnstat_image:show2()
+    self:hide()
+    local conn_stat = [[bash -c 'lsof -i |grep ESTABLISHED']]
+    awful.spawn.easy_async(conn_stat, function(stdout, stderr, reason, exit_code)
+      naughty.notify {
+        text = color4 .. stdout .. span_end,
+        position = 'top_right',
+        timeout = 50, hover_timeout = 0.5, bg = beautiful.widget_bg,
+      }
+      end)
+end
+
+net_vicious:connect_signal("mouse::enter", function () vnstat_image:show() end)
+net_vicious:connect_signal("mouse::leave", function () vnstat_image:hide() end)
+net_vicious:buttons(awful.util.table.join(
+    awful.button({ }, 1, function () vnstat_image:show1() end),
+    awful.button({ }, 3, function () vnstat_image:show2() end)
+    ))
 --========= Net =========--
 --========= MPD =========--
 local mpdicon = wibox.widget.imagebox()
@@ -721,5 +797,25 @@ function (widget,args)
         return string.format("  RAM: %s%% ( %sMB / %sMB )  ",args[1],args[2],args[3] )
     end
 end , 5 )
+
+uptimewidget = wibox.widget.textbox()
+  vicious.register(uptimewidget, vicious.widgets.uptime,
+    function (widget, args)
+      return string.format("Uptime: %2dd %02d:%02d ", args[1], args[2], args[3])
+    end, 61)
+
+ctext = wibox.widget.textbox()
+  cgraph = wibox.widget.graph()
+  cgraph:set_width(100):set_height(20)
+  cgraph:set_stack(true):set_max_value(100)
+  cgraph:set_background_color("#494B4F")
+  cgraph:set_stack_colors({ "#FF5656", "#88A175", "#AECF96" })
+  vicious.register(ctext, vicious.widgets.cpu,
+    function (widget, args)
+      cgraph:add_value(args[2], 1) -- Core 1, color 1
+      cgraph:add_value(args[3], 2) -- Core 2, color 2
+      cgraph:add_value(args[4], 3) -- Core 3, color 3
+    end, 3)
 --========= vicious =========--
 ]]--
+--font   = "xos4 Terminus Bold 12",

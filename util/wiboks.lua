@@ -480,7 +480,7 @@ awful.screen.connect_for_each_screen(function(s)
     }
 
        --------------------------- Create the vertical wibox
-    s.dockheight = (40 *  s.workarea.height)/100
+    s.dockheight = (49 *  s.workarea.height)/100
 
     s.dock_wibox = wibox({ screen = s, x=0, y=s.workarea.height/2 - s.dockheight/2, width = 300, height = s.dockheight, fg = beautiful.menu_fg_normal, bg = beautiful.widget_bg, ontop = true, visible = true, type = "dock" })
 
@@ -491,7 +491,29 @@ awful.screen.connect_for_each_screen(function(s)
     -- Add widgets to the vertical wibox
     s.dock_wibox:setup {
         layout = wibox.layout.fixed.vertical,
-        lspace3,
+        { --
+          { --
+            {
+              widget = sys,
+            },
+              left   = 7,
+              right  = 0,
+              top    = 8,
+              bottom = 7,
+              widget = wibox.container.margin
+          },
+          { --
+            {
+              widget = uptime,
+            },
+              left   = 15,
+              right  = 0,
+              top    = 8,
+              bottom = 7,
+              widget = wibox.container.margin
+          },
+          layout  = wibox.layout.fixed.horizontal,
+        },
         { -- Память текст
             layout = wibox.layout.align.horizontal,
             mem_txt,
@@ -502,11 +524,38 @@ awful.screen.connect_for_each_screen(function(s)
             mem_graph,
         },
         lspace5,
-        { -- Проц ntrcn
-            layout = wibox.layout.flex.horizontal,
-            cpu.widget,
-            temp,
-            cpu_graph,
+        { -- Проц
+          {
+            {
+              widget = cpufreq_vicious,
+            },
+              left   = 7,
+              right  = 0,
+              top    = 0,
+              bottom = 0,
+              widget = wibox.container.margin
+          },
+          { -- Говернер и частота
+            {
+              widget = temp_cpu.widget,
+            },
+              left   = 40,
+              right  = 0,
+              top    = 0,
+              bottom = 0,
+              widget = wibox.container.margin
+          },
+          { -- темп проца
+            {
+              widget = cpu,
+            },
+              left   = 15,
+              right  = 10,
+              top    = 0,
+              bottom = 0,
+              widget = wibox.container.margin
+          },
+          layout  = wibox.layout.align.horizontal
         },
         lspace5,
         cpu_txt,
@@ -613,22 +662,72 @@ awful.screen.connect_for_each_screen(function(s)
           layout  = wibox.layout.fixed.horizontal,
         },
         lspace5,
-        { -- / текст
-            layout = wibox.layout.align.horizontal,
-            fstext_r,
+        { -- /
+          {-- / текст
+            {
+              widget = fstext_r,
+            },
+              left   = 7,
+              right  = 0,
+              top    = 0,
+              bottom = 0,
+              widget = wibox.container.margin
+          },
+          { -- / I/O
+            {
+              widget = fs_stat_r,
+            },
+              left   = 45,
+              right  = 0,
+              top    = 0,
+              bottom = 0,
+              widget = wibox.container.margin
+          },
+          layout  = wibox.layout.fixed.horizontal,
         },
         { -- / бар
             layout = wibox.layout.align.horizontal,
             fsbar_r,
         },
-        { -- /home текст
-            layout = wibox.layout.align.horizontal,
-            fstext_h,
+        { -- /home
+          {-- /home текст
+            {
+              widget = fstext_h,
+            },
+              left   = 7,
+              right  = 0,
+              top    = 0,
+              bottom = 0,
+              widget = wibox.container.margin
+          },
+          { -- /home I/O
+            {
+              widget = fs_stat_h,
+            },
+              left   = 12,
+              right  = 0,
+              top    = 0,
+              bottom = 0,
+              widget = wibox.container.margin
+          },
+          layout  = wibox.layout.fixed.horizontal,
         },
         { -- /home бар
             layout = wibox.layout.align.horizontal,
             fsbar_h,
         },
+
+        { -- Список процессов
+            {
+              widget = process_htop,
+            },
+              left   = 15,
+              right  = 0,
+              top    = 9,
+              bottom = 0,
+              widget = wibox.container.margin
+        },
+        test,
 --[[
         {
           {

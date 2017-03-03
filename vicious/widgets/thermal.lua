@@ -19,11 +19,11 @@ local thermal = {}
 
 -- {{{ Thermal widget type
 local function worker(format, warg)
-    if not warg then return end
+    if not warg then return "fuck off" end
 
     local zone = { -- Known temperature data sources
         ["sys"]  = {"/sys/class/thermal/",     file = "temp",       div = 1000},
-        ["core"] = {"/sys/devices/platform/",  file = "temp2_input",div = 1000},
+        ["core"] = {"/sys/class/hwmon/hwmon2",  file = "temp1_input",div = 1000},
         ["proc"] = {"/proc/acpi/thermal_zone/",file = "temperature"}
     } --  Default to /sys/class/thermal
     warg = type(warg) == "table" and warg or { warg, "sys" }
