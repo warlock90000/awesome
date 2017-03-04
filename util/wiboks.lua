@@ -673,11 +673,21 @@ awful.screen.connect_for_each_screen(function(s)
               bottom = 0,
               widget = wibox.container.margin
           },
-          { -- / I/O
+          { -- / I/O R
             {
-              widget = fs_stat_r,
+              widget = fs_stat_graph_r_read,
             },
               left   = 45,
+              right  = 0,
+              top    = 0,
+              bottom = 0,
+              widget = wibox.container.margin
+          },
+          { -- / I/O W
+            {
+              widget = fs_stat_graph_r_write,
+            },
+              left   = 5,
               right  = 0,
               top    = 0,
               bottom = 0,
@@ -700,11 +710,21 @@ awful.screen.connect_for_each_screen(function(s)
               bottom = 0,
               widget = wibox.container.margin
           },
-          { -- /home I/O
+          { -- /home I/O R
             {
-              widget = fs_stat_h,
+              widget = fs_stat_graph_h_read,
             },
               left   = 12,
+              right  = 0,
+              top    = 0,
+              bottom = 0,
+              widget = wibox.container.margin
+          },
+          { -- /home I/O W
+            {
+              widget = fs_stat_graph_h_write,
+            },
+              left   = 5,
               right  = 0,
               top    = 0,
               bottom = 0,
@@ -727,8 +747,7 @@ awful.screen.connect_for_each_screen(function(s)
               bottom = 0,
               widget = wibox.container.margin
         },
-        test,
---[[
+--[[ fs_stat_graph_h_read
         {
           {
             {
