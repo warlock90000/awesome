@@ -50,7 +50,7 @@ vicious.register(sys, vicious.widgets.os, color5.."$1 $2"..span_end, 600)
 uptime = wibox.widget.textbox()
 vicious.register(uptime, vicious.widgets.uptime,
     function (widget, args)
-      return string.format(color6.."Up: %2dd %02d:%02d "..span_end, args[1], args[2], args[3])
+      return string.format(color6.."Up: %2dd %02dh:%02dm "..span_end, args[1], args[2], args[3])
     end, 61)
 --========= base =========--
 --========= Textclock =========--
@@ -93,11 +93,12 @@ myweather = lain.widget.weather({
 --========= Weather =========--
 --========= fs =========--
 vicious.cache(vicious.widgets.dio)
+vicious.cache(vicious.widgets.fs)
+
 fstext_r = wibox.widget {
-    valign           = 3,
-    align            = 1,
     color            = beautiful.fg_normal,
     background_color = beautiful.bg_normal,
+    font   = "Terminus Re33 Bold 10",
     widget           = wibox.widget.textbox,
 }
 
@@ -105,50 +106,27 @@ fsbar_r = wibox.widget {
     forced_height    = 15,
     forced_width     = 298,
     background_color = beautiful.widget_bg,
+    color            = ({
+                          type = "linear",
+                          from = { 0, 7 },
+                          to = { 0, 0 },
+                          stops = {
+                                    { 0, "#00B52A" },
+                                    { 0.5, "#1E8B22" },
+                                    { 1, "#B87912" }
+                                  }
+                       }),
     margins          = 3,
     paddings         = 1,
     ticks            = true,
     ticks_size       = 6,
     widget        = wibox.widget.progressbar,
 }
-fs_r = lain.widget.fs({
-    partition = "/",
-    options = "--exclude-type=tmpfs",
-    notification_preset = { fg = beautiful.fg_normal, bg = beautiful.bg_normal, font = beautiful.font },
-    settings  = function()
-        fstext_r:set_text(" Root " .. fs_now.used_gb.."/"..fs_now.available_gb)
-        if tonumber(fs_now.used) < 90 then
-            fsbar_r:set_color({
-                        type = "linear",
-                        from = { 0, 7 },
-                        to = { 0, 0 },
-                        stops = {
-                          { 0, "#00B52A" },
-                          { 0.5, "#1E8B22" },
-                          { 1, "#B87912" }
-                                }
-                       })
-        else
-            fsbar_r:set_color({
-                        type = "linear",
-                        from = { 0, 4 },
-                        to = { 0, 0 },
-                        stops = {
-                          { 0, "#B56900" },
-                          { 0.5, "#dc322f" },
-                          { 1, "#BB2424" }
-                                }
-                       })
-        end
-            fsbar_r:set_value(fs_now.used / 100)
-        end
-})
-    ---
+
 fstext_h = wibox.widget {
-    valign           = 3,
-    align            = 1,
     color            = beautiful.fg_normal,
     background_color = beautiful.bg_normal,
+    font   = "Terminus Re33 Bold 10",
     widget           = wibox.widget.textbox,
 }
 
@@ -156,6 +134,16 @@ fsbar_h = wibox.widget {
     forced_height    = 15,
     forced_width     = 298,
     background_color = beautiful.widget_bg,
+    color            = ({
+                          type = "linear",
+                          from = { 0, 7 },
+                          to = { 0, 0 },
+                          stops = {
+                                    { 0, "#00B52A" },
+                                    { 0.5, "#1E8B22" },
+                                    { 1, "#B87912" }
+                                  }
+                       }),
     margins          = 3,
     paddings         = 1,
     ticks            = true,
@@ -163,37 +151,16 @@ fsbar_h = wibox.widget {
     widget        = wibox.widget.progressbar,
 }
 
-fs_h = lain.widget.fs({
-    partition = "/home",
-    options = "--exclude-type=tmpfs",
-    settings  = function()
-        fstext_h:set_text(" Home " .. fs_now.used_gb.."/"..fs_now.available_gb)
-        if tonumber(fs_now.used) < 90 then
-          fsbar_h:set_color({
-                        type = "linear",
-                        from = { 0, 7 },
-                        to = { 0, 0 },
-                        stops = {
-                          { 0, "#00B52A" },
-                          { 0.5, "#1E8B22" },
-                          { 1, "#B87912" }
-                                }
-                       })
-        else
-          fsbar_h:set_color({
-                        type = "linear",
-                        from = { 0, 4 },
-                        to = { 0, 0 },
-                        stops = {
-                          { 0, "#B56900" },
-                          { 0.5, "#dc322f" },
-                          { 1, "#BB2424" }
-                                }
-                       })
-        end
-          fsbar_h:set_value(fs_now.used / 100)
-        end
-    })
+vicious.register(fstext_r, vicious.widgets.fs,
+            function (widget, args)
+              fstext_r:set_text(' / '..tostring(args["{/ used_gb}"])..'/' .. tostring(args["{/ avail_gb}"])..'Gb')
+              fsbar_r:set_max_value(tonumber(args["{/ size_gb}"]))
+              fsbar_r:set_value(tonumber(args["{/ used_gb}"]))
+              fstext_h:set_text(' /Home '..tostring(args["{/home used_gb}"])..'/' .. tostring(args["{/home avail_gb}"])..'Gb')
+              fsbar_h:set_max_value(tonumber(args["{/home size_gb}"]))
+              fsbar_h:set_value(tonumber(args["{/home used_gb}"]))
+            end, 60)
+
 fs_stat_graph_r_read = wibox.widget {
             forced_height    = 25,
             forced_width     = 57,
@@ -282,33 +249,19 @@ fs_stat_graph_h_write = wibox.widget {
                                 }),
             widget        = wibox.widget.graph,
 }
-vicious.register(fs_stat_graph_r_read, vicious.widgets.dio, "${sdb7 read_kb}", 4)
-vicious.register(fs_stat_graph_r_write, vicious.widgets.dio, "${sdb7 write_kb}", 4)
-vicious.register(fs_stat_graph_h_read, vicious.widgets.dio, "${sdb3 read_kb}", 4)
-vicious.register(fs_stat_graph_h_write, vicious.widgets.dio, "${sdb3 write_kb}", 4)
+
+vicious.register(fs_stat_graph_r_read, vicious.widgets.dio,
+            function (widget, args)
+              fs_stat_graph_r_read:add_value(tonumber(args["{sdb7 read_kb}"]))
+              fs_stat_graph_r_write:add_value(tonumber(args["{sdb7 write_kb}"]))
+              fs_stat_graph_h_read:add_value(tonumber(args["{sdb3 read_kb}"]))
+              fs_stat_graph_h_write:add_value(tonumber(args["{sdb3 write_kb}"]))
+            end, 3)
 --========= fs =========--
 --========= CPU =========--
 vicious.cache(vicious.widgets.cpu)
---[[
-cpu_graph = wibox.widget {
-            forced_height    = 15,
-            forced_width     = 120,
-            color            = ({
-                                  type = "linear",
-                                  from = { 0, 25 },
-                                  to = { 0, 0 },
-                                  stops = {
-                                    { 0, "#268bd2" },
-                                    { 0.25, "#b58900" },
-                                    { 1, "#dc322f" }
-                                  }
-                                }),
-            background_color = beautiful.widget_bg,
-            min_value        = 0,
-            max_value        = 100,
-            widget        = wibox.widget.graph,
-}
-]]--
+vicious.cache(vicious.widgets.cpufreq)
+
 cpufreq_vicious = wibox.widget.textbox()
 vicious.register(cpufreq_vicious, vicious.widgets.cpufreq,
   function (widget,args)
@@ -322,93 +275,9 @@ temp_cpu = lain.widget.temp({
     end
 })
 
-cpu_scale_0 = wibox.widget {
-            forced_height    = 10,
-            forced_width     = 75,
-            color            = ({
-                                  type = "linear",
-                                  from = { 0, 7 },
-                                  to = { 0, 0 },
-                                  stops = {
-                                    { 0, "#00B52A" },
-                                    { 0.5, "#1E8B22" },
-                                    { 1, "#B87912" }
-                                  }
-                                }),
-            background_color = beautiful.widget_bg,
-            margins          = 1,
-            paddings         = 1,
-            ticks            = true,
-            ticks_size       = 3,
-            --max_value        = 100,
-            widget        = wibox.widget.progressbar,
-}
-cpu_scale_1 = wibox.widget {
-            forced_height    = 10,
-            forced_width     = 75,
-            color            = ({
-                                  type = "linear",
-                                  from = { 0, 7 },
-                                  to = { 0, 0 },
-                                  stops = {
-                                    { 0, "#00B52A" },
-                                    { 0.5, "#1E8B22" },
-                                    { 1, "#B87912" }
-                                  }
-                                }),
-            background_color = beautiful.widget_bg,
-            margins          = 1,
-            paddings         = 1,
-            ticks            = true,
-            ticks_size       = 3,
-            --max_value        = 100,
-            widget        = wibox.widget.progressbar,
-}
-cpu_scale_2 = wibox.widget {
-            forced_height    = 10,
-            forced_width     = 75,
-            color            = ({
-                                  type = "linear",
-                                  from = { 0, 7 },
-                                  to = { 0, 0 },
-                                  stops = {
-                                    { 0, "#00B52A" },
-                                    { 0.5, "#1E8B22" },
-                                    { 1, "#B87912" }
-                                  }
-                                }),
-            background_color = beautiful.widget_bg,
-            margins          = 1,
-            paddings         = 1,
-            ticks            = true,
-            ticks_size       = 3,
-            --max_value        = 100,
-            widget        = wibox.widget.progressbar,
-}
-cpu_scale_3 = wibox.widget {
-            forced_height    = 10,
-            forced_width     = 75,
-            color            = ({
-                                  type = "linear",
-                                  from = { 0, 7 },
-                                  to = { 0, 0 },
-                                  stops = {
-                                    { 0, "#00B52A" },
-                                    { 0.5, "#1E8B22" },
-                                    { 1, "#B87912" }
-                                  }
-                                }),
-            background_color = beautiful.widget_bg,
-            margins          = 1,
-            paddings         = 1,
-            ticks            = true,
-            ticks_size       = 3,
-            --max_value        = 100,
-            widget        = wibox.widget.progressbar,
-}
 
 cpu_txt = wibox.widget{
-      markup   = color2 .. "   CPU1     CPU2     CPU3     CPU4" .. span_end,
+      markup   = color2 .. "  CPU1     CPU2     CPU3     CPU4" .. span_end,
       widget = wibox.widget.textbox,
       font   = "Terminus Re33 Bold 11",
 }
@@ -417,41 +286,14 @@ cpu = wibox.widget{
       font   = "Terminus Re33 Bold 11",
 }
 
-vicious.register(cpu, vicious.widgets.cpu,
-  function (widget,args)
-    cpu:set_text("  " .. args[1] .. "% ")
-    --cpu_graph:add_value(args[1])
-  end , 3 )
-
-vicious.register(cpu_scale_0, vicious.widgets.cpu,
-  function (widget,args)
-    cpu_scale_0:set_value(args[2])
-    return args[2]
-  end , 3 )
-vicious.register(cpu_scale_1, vicious.widgets.cpu,
-  function (widget,args)
-    cpu_scale_1:set_value(args[3])
-    return args[3]
-  end , 3 )
-vicious.register(cpu_scale_2, vicious.widgets.cpu,
-  function (widget,args)
-    cpu_scale_2:set_value(args[4])
-    return args[4]
-  end , 3 )
-vicious.register(cpu_scale_3, vicious.widgets.cpu,
-  function (widget,args)
-    cpu_scale_3:set_value(args[5])
-    return args[5]
-  end , 3 )
---================
 cpupct0 = wibox.widget.textbox()
-vicious.register(cpupct0, vicious.widgets.cpu, "$2%", 3)
 cpugraph0 = wibox.widget {
-            forced_height    = 25,
-            forced_width     = 50,
-            step_width = 2,
-            step_spacing = 1,
-            step_shape = function(cr, width, height)
+            forced_height = 25,
+            forced_width  = 50,
+            max_value     = 100,
+            step_width    = 2,
+            step_spacing  = 1,
+            step_shape    = function(cr, width, height)
                 gears.shape.rounded_rect(cr, width, height, 2)
             end,
             border_color     = beautiful.widget_bg,
@@ -468,16 +310,15 @@ cpugraph0 = wibox.widget {
                                 }),
             widget        = wibox.widget.graph,
 }
-vicious.register(cpugraph0, vicious.widgets.cpu, "$2", 3)
 
 cpupct1 = wibox.widget.textbox()
-vicious.register(cpupct1, vicious.widgets.cpu, "$3%", 3)
 cpugraph1 = wibox.widget {
-            forced_height    = 25,
-            forced_width     = 50,
-            step_width = 2,
-            step_spacing = 1,
-            step_shape = function(cr, width, height)
+            forced_height = 25,
+            forced_width  = 50,
+            max_value     = 100,
+            step_width    = 2,
+            step_spacing  = 1,
+            step_shape    = function(cr, width, height)
                 gears.shape.rounded_rect(cr, width, height, 2)
             end,
             border_color     = beautiful.widget_bg,
@@ -494,16 +335,15 @@ cpugraph1 = wibox.widget {
                                 }),
             widget        = wibox.widget.graph,
 }
-vicious.register(cpugraph1, vicious.widgets.cpu, "$3", 3)
 
 cpupct2 = wibox.widget.textbox()
-vicious.register(cpupct2, vicious.widgets.cpu, "$4%", 3)
 cpugraph2 = wibox.widget {
-            forced_height    = 25,
-            forced_width     = 50,
-            step_width = 2,
-            step_spacing = 1,
-            step_shape = function(cr, width, height)
+            forced_height = 25,
+            forced_width  = 50,
+            max_value     = 100,
+            step_width    = 2,
+            step_spacing  = 1,
+            step_shape    = function(cr, width, height)
                 gears.shape.rounded_rect(cr, width, height, 2)
             end,
             border_color     = beautiful.widget_bg,
@@ -520,16 +360,15 @@ cpugraph2 = wibox.widget {
                                 }),
             widget        = wibox.widget.graph,
 }
-vicious.register(cpugraph2, vicious.widgets.cpu, "$4", 3)
 
 cpupct3 = wibox.widget.textbox()
-vicious.register(cpupct3, vicious.widgets.cpu, "$5%", 3)
 cpugraph3 = wibox.widget {
-            forced_height    = 25,
-            forced_width     = 50,
-            step_width = 2,
-            step_spacing = 1,
-            step_shape = function(cr, width, height)
+            forced_height = 25,
+            forced_width  = 50,
+            max_value     = 100,
+            step_width    = 2,
+            step_spacing  = 1,
+            step_shape    = function(cr, width, height)
                 gears.shape.rounded_rect(cr, width, height, 2)
             end,
             border_color     = beautiful.widget_bg,
@@ -546,7 +385,18 @@ cpugraph3 = wibox.widget {
                                 }),
             widget        = wibox.widget.graph,
 }
-vicious.register(cpugraph3, vicious.widgets.cpu, "$5", 3)
+vicious.register(cpupct3, vicious.widgets.cpu,
+            function (widget, args)
+              cpu:set_text("  " .. args[1] .. "% ")
+              cpupct0:set_text(tostring(args[2]).."%")
+              cpugraph0:add_value(tonumber(args[2]))
+              cpupct1:set_text(tostring(args[3]).."%")
+              cpugraph1:add_value(tonumber(args[3]))
+              cpupct2:set_text(tostring(args[4]).."%")
+              cpugraph2:add_value(tonumber(args[4]))
+              cpupct3:set_text(tostring(args[5]).."%")
+              cpugraph3:add_value(tonumber(args[5]))
+            end, 3)
 
 process_htop = awful.widget.watch("bash -c '/bin/ps --sort -c,-s -eo fname,user,%cpu,%mem,pid | /usr/bin/head'", 7)
   process_htop:set_font("Terminus Re33 Bold 11")
@@ -578,7 +428,6 @@ mem_txt = wibox.widget {
         widget = wibox.widget.textbox,
         font = "Terminus Re33 Bold 11",
   }
-vicious.register(mem_txt, vicious.widgets.mem, "  Use:$2Mb Tot:$3Mb Free:$4Mb", 5)
 
 mem_graph = wibox.widget {
             forced_height    = 15,
@@ -593,6 +442,7 @@ mem_graph = wibox.widget {
 
 vicious.register(mem_graph, vicious.widgets.mem,
   function (widget,args)
+      mem_txt:set_text("  Use:"..tostring(args[2]).."Mb Tot:"..tostring(args[3]).."Mb Free:"..tostring(args[4]).."Mb")
       if tonumber(args[1]) < 75 then
           mem_graph:set_color({
                         type = "linear",
@@ -704,7 +554,6 @@ vicious.cache(vicious.widgets.net)
 net_vicious = wibox.widget.textbox()
 vicious.register(net_vicious, vicious.widgets.net, color1.."⬇ "..span_end..font2.."${enp3s0 rx_mb}M".." ✦ ".."${enp3s0 down_kb}K"..span_end..color3.." ✦ "..span_end..color2.."⬆ "..span_end..font2.."${enp3s0 tx_mb}M".." ✦ ".."${enp3s0 up_kb}K"..span_end, 5)
 
-
 net_raph_d = wibox.widget {
             forced_height    = 25,
             forced_width     = 140,
@@ -728,7 +577,6 @@ net_raph_d = wibox.widget {
                                 }),
             widget        = wibox.widget.graph,
 }
-vicious.register(net_raph_d, vicious.widgets.net, "${enp3s0 down_kb}", 3)
 
 net_raph_u = wibox.widget {
             forced_height    = 25,
@@ -753,7 +601,12 @@ net_raph_u = wibox.widget {
                                 }),
             widget        = wibox.widget.graph,
 }
-vicious.register(net_raph_u, vicious.widgets.net, "${enp3s0 up_kb}", 3)
+vicious.register(net_raph_d, vicious.widgets.net,
+            function (widget, args)
+              --net_vicious:set_markup(color1.."⬇ "..span_end..font2..args["{enp3s0 rx_mb}"].."M".." ✦ "..args["{enp3s0 down_kb}"].."K"..span_end..color3.." ✦ "..span_end..color2.."⬆ "..span_end..font2..args["{enp3s0 tx_mb}"].."M".." ✦ "..args["{enp3s0 up_kb}"].."K"..span_end)
+              net_raph_d:add_value(tonumber(args["{enp3s0 down_kb}"]))
+              net_raph_u:add_value(tonumber(args["{enp3s0 up_kb}"]))
+            end, 3)
 --=======
 -- vnstat_image notification
 local vnstat_image = {}

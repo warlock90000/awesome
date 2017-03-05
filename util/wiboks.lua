@@ -559,14 +559,6 @@ awful.screen.connect_for_each_screen(function(s)
         },
         lspace5,
         cpu_txt,
-        { -- Проц бары
-            layout = wibox.layout.fixed.horizontal,
-            cpu_scale_0,
-            cpu_scale_1,
-            cpu_scale_2,
-            cpu_scale_3,
-        },
-        lspace5,
         { -- Проц графики
           { -- цпу1 граф
             {
@@ -677,7 +669,7 @@ awful.screen.connect_for_each_screen(function(s)
             {
               widget = fs_stat_graph_r_read,
             },
-              left   = 45,
+              left   = 68,
               right  = 0,
               top    = 0,
               bottom = 0,
