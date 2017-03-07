@@ -7,7 +7,7 @@ local naughty       = require("naughty")
 local lain          = require("lain")
 local pulseaudio    = require("pulseaudio")
 local vicious       = require("vicious")
-vicious.contrib = require("vicious.contrib")
+--vicious.contrib = require("vicious.contrib")
 --local blingbling    = require("blingbling")
 
 local markup = lain.util.markup
@@ -98,7 +98,7 @@ vicious.cache(vicious.widgets.fs)
 fstext_r = wibox.widget {
     color            = beautiful.fg_normal,
     background_color = beautiful.bg_normal,
-    font   = "Terminus Re33 Bold 10",
+    font   = "Terminus Re33 Bold 11",
     widget           = wibox.widget.textbox,
 }
 
@@ -126,7 +126,7 @@ fsbar_r = wibox.widget {
 fstext_h = wibox.widget {
     color            = beautiful.fg_normal,
     background_color = beautiful.bg_normal,
-    font   = "Terminus Re33 Bold 10",
+    font   = "Terminus Re33 Bold 11",
     widget           = wibox.widget.textbox,
 }
 
@@ -151,6 +151,67 @@ fsbar_h = wibox.widget {
     widget        = wibox.widget.progressbar,
 }
 
+fs_r = lain.widget.fs({
+    partition = "/", options = "--exclude-type=tmpfs",
+    settings  = function()
+        fstext_r:set_text(" Root " .. fs_now.used_gb.."/"..fs_now.available_gb)
+        if tonumber(fs_now.used) < 90 then
+            fsbar_r:set_color({
+                        type = "linear",
+                        from = { 0, 7 },
+                        to = { 0, 0 },
+                        stops = {
+                          { 0, "#00B52A" },
+                          { 0.5, "#1E8B22" },
+                          { 1, "#B87912" }
+                                }
+                       })
+        else
+            fsbar_r:set_color({
+                        type = "linear",
+                        from = { 0, 4 },
+                        to = { 0, 0 },
+                        stops = {
+                          { 0, "#B56900" },
+                          { 0.5, "#dc322f" },
+                          { 1, "#BB2424" }
+                                }
+                       })
+        end
+            fsbar_r:set_value(fs_now.used / 100)
+        end
+})
+fs_h = lain.widget.fs({
+    partition = "/home", options = "--exclude-type=tmpfs",
+    settings  = function()
+        fstext_h:set_text(" Home " .. fs_now.used_gb.."/"..fs_now.available_gb)
+        if tonumber(fs_now.used) < 90 then
+            fsbar_h:set_color({
+                        type = "linear",
+                        from = { 0, 7 },
+                        to = { 0, 0 },
+                        stops = {
+                          { 0, "#00B52A" },
+                          { 0.5, "#1E8B22" },
+                          { 1, "#B87912" }
+                                }
+                       })
+        else
+            fsbar_h:set_color({
+                        type = "linear",
+                        from = { 0, 4 },
+                        to = { 0, 0 },
+                        stops = {
+                          { 0, "#B56900" },
+                          { 0.5, "#dc322f" },
+                          { 1, "#BB2424" }
+                                }
+                       })
+        end
+            fsbar_h:set_value(fs_now.used / 100)
+        end
+})
+--[[
 vicious.register(fstext_r, vicious.widgets.fs,
             function (widget, args)
               fstext_r:set_text(' / '..tostring(args["{/ used_gb}"])..'/' .. tostring(args["{/ avail_gb}"])..'Gb')
@@ -160,6 +221,7 @@ vicious.register(fstext_r, vicious.widgets.fs,
               fsbar_h:set_max_value(tonumber(args["{/home size_gb}"]))
               fsbar_h:set_value(tonumber(args["{/home used_gb}"]))
             end, 60)
+]]--
 
 fs_stat_graph_r_read = wibox.widget {
             forced_height    = 25,
@@ -401,6 +463,12 @@ vicious.register(cpupct3, vicious.widgets.cpu,
 process_htop = awful.widget.watch("bash -c '/bin/ps --sort -c,-s -eo fname,user,%cpu,%mem,pid | /usr/bin/head'", 7)
   process_htop:set_font("Terminus Re33 Bold 11")
 
+--process_htop = wibox.widget.textbox()
+--local noisy = [[bash -c '/bin/ps --sort -c,-s -eo fname,user,%cpu,%mem,pid | /usr/bin/head']]
+--awful.spawn.easy_async(noisy, function(stdout, stderr, reason, exit_code)
+--    process_htop:set_text(stdout)
+--end)
+
 --[[  ------------------------------------ tooltip
 ---------- cpu popup
 mycpu_t = awful.tooltip({
@@ -458,8 +526,8 @@ vicious.register(mem_graph, vicious.widgets.mem,
       else
           mem_graph:set_color({
                         type = "linear",
-                        from = { 0, 4 },
-                        to = { 0, 0 },
+                        from = { 0, 0 },
+                        to = { 0, 200 },
                         stops = {
                           { 0, "#B56900" },
                           { 0.5, "#dc322f" },
@@ -497,10 +565,10 @@ volumewidget1:buttons(awful.util.table.join(
 ))
 
 volumetimer = timer({ timeout = 31 })
-volumetimer:add_signal("timeout", function() volumewidget.markup = pulseaudio.volume_info_c() end)
+volumetimer:connect_signal("timeout", function() volumewidget.markup = pulseaudio.volume_info_c() end)
 volumetimer:start()
 volumetimer1 = timer({ timeout = 31 })
-volumetimer1:add_signal("widget::redraw_needed", function() volumewidget1.value = pulseaudio.volume_info_for_bar() end)
+volumetimer1:connect_signal("widget::redraw_needed", function() volumewidget1.value = pulseaudio.volume_info_for_bar() end)
 volumetimer1:start()
 --========= Audio =========--
 --========= PKG =========--
@@ -521,7 +589,7 @@ end
 --[[
 radical = require("radical")
 menu1 = radical.context{}
-    menu1:add_item {text="Screen 1",text=GetMemInfo("Mem:$1% Use: $2Mb Total: $3Mb Free: $4Mb Swap: $5%")}
+--    menu1:add_item {text="Screen 1",text=GetMemInfo("Mem:$1% Use: $2Mb Total: $3Mb Free: $4Mb Swap: $5%")}
     menu1:add_item {text="Screen 9",icon= beautiful.awesome_icon}
     menu1:add_item {text="Sub Menu",sub_menu = function()
         local smenu = radical.context{}
@@ -545,7 +613,7 @@ pkg_upd_icons = wibox.widget.textbox()
     pkg_upd_icons:connect_signal('mouse::leave', function () naughty.destroy(usage) end)
 
 pkg_upd_vicious = wibox.widget.textbox()
-    vicious.register(pkg_upd_vicious, vicious.widgets.pkg, "$1", 100, "Arch")
+    vicious.register(pkg_upd_vicious, vicious.widgets.pkg, "$1", 600, "Arch")
 
 --========= PKG =========--
 --========= Net =========--
@@ -559,7 +627,7 @@ net_raph_d = wibox.widget {
             forced_width     = 140,
             scale            = true,
             step_width = 2,
-            step_spacing = 1,
+            step_spacing = 0,
             step_shape = function(cr, width, height)
                 gears.shape.rounded_rect(cr, width, height, 2)
             end,
@@ -582,7 +650,7 @@ net_raph_u = wibox.widget {
             forced_height    = 25,
             forced_width     = 140,
             scale            = true,
-            step_width = 3,
+            step_width = 2,
             step_spacing = 1,
             step_shape = function(cr, width, height)
                 gears.shape.rounded_rect(cr, width, height, 2)
@@ -655,11 +723,37 @@ function vnstat_image:show2()
       end)
 end
 
+function vnstat_image:show3()
+    self:hide()
+    local conn_stat = [[bash -c 'vnstat -h | xargs -0 notify-send -t 0']]
+    awful.spawn.easy_async(conn_stat, function(stdout, stderr, reason, exit_code)
+      naughty.notify {
+        text = color4 .. stdout .. span_end,
+        position = 'top_right',
+        timeout = 50, hover_timeout = 0.5, bg = beautiful.widget_bg,
+      }
+      end)
+end
+
+function vnstat_image:show4()
+    self:hide()
+    local conn_stat = [[bash -c 'vnstat -d | xargs -0 notify-send -t 0']]
+    awful.spawn.easy_async(conn_stat, function(stdout, stderr, reason, exit_code)
+      naughty.notify {
+        text = color4 .. stdout .. span_end,
+        position = 'top_right',
+        timeout = 50, hover_timeout = 0.5, bg = beautiful.widget_bg,
+      }
+      end)
+end
+
 net_vicious:connect_signal("mouse::enter", function () vnstat_image:show() end)
 net_vicious:connect_signal("mouse::leave", function () vnstat_image:hide() end)
 net_vicious:buttons(awful.util.table.join(
     awful.button({ }, 1, function () vnstat_image:show1() end),
-    awful.button({ }, 3, function () vnstat_image:show2() end)
+    awful.button({ }, 3, function () vnstat_image:show2() end),
+    awful.button({ }, 9, function () vnstat_image:show3() end),
+    awful.button({ }, 8, function () vnstat_image:show4() end)
     ))
 --========= Net =========--
 --========= MPD =========--

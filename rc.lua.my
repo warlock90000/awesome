@@ -176,7 +176,11 @@ pkg_upd_vicious:buttons(
 )
 -- {{{ Key bindings
 globalkeys = awful.util.table.join(
-
+--[[  меню на текущем клиенте
+    awful.key({ modkey }, "Tab", function()
+      lain.util.menu_clients_current_tags(myexit)
+    end),
+]]--
     -- Take a screenshot
     -- https://github.com/copycat-killer/dots/blob/master/bin/screenshot
     awful.key({ altkey }, "p", function() os.execute("screenshot") end),
@@ -316,7 +320,7 @@ globalkeys = awful.util.table.join(
 
     -- Widgets popups
     awful.key({ altkey, }, "c", function () lain.widget.calendar.show(7) end),
-    awful.key({ altkey, }, "h", function () fsroot.show(7) end),
+    --awful.key({ altkey, }, "h", function () fsroot.show(7) end),
     awful.key({ altkey, }, "w", function () myweather.show(7) end),
 
     -- Audio
@@ -475,6 +479,7 @@ clientbuttons = awful.util.table.join(
     awful.button({ modkey, }, 4, function () lain.util.useless_gaps_resize( 1) end),
     awful.button({ modkey, }, 5, function () lain.util.useless_gaps_resize(-1) end)
     )
+
 --[[ Кнопки мыши
 1 - ЛКМ
 2 - СКМ

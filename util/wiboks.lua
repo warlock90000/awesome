@@ -38,6 +38,14 @@ lspace3.forced_height = 18
 lspace4.forced_height = 2
 lspace5.forced_height = 5
 
+local tag_menu = {
+    { "Добавить тег",       function() lain.util.add_tag()     end },
+    { "Переименовать тег",  function() lain.util.rename_tag()  end },
+    { "Тег влево",          function() lain.util.move_tag(1)   end },
+    { "Тег враво",          function() lain.util.move_tag(-1)  end },
+    { "Удалить тег",        function() lain.util.delete_tag()  end }
+}
+
 -- {{{ Wibox
 -- Create a wibox for each screen and add it
 
@@ -49,7 +57,8 @@ taglist_buttons = awful.util.table.join(
                                               end
                                           end),
                                           ]]--
-                    awful.button({ }, 3, awful.tag.viewtoggle),
+                    --awful.button({ }, 3, awful.tag.viewtoggle),
+                    awful.button({ }, 3, function(t) lain.util.menu_clients_current_tags(tag_menu) end),
                     awful.button({ modkey }, 3, function(t)
                                               if client.focus then
                                                   client.focus:toggle_tag(t)
@@ -669,7 +678,7 @@ awful.screen.connect_for_each_screen(function(s)
             {
               widget = fs_stat_graph_r_read,
             },
-              left   = 68,
+              left   = 45,
               right  = 0,
               top    = 0,
               bottom = 0,
@@ -706,7 +715,7 @@ awful.screen.connect_for_each_screen(function(s)
             {
               widget = fs_stat_graph_h_read,
             },
-              left   = 12,
+              left   = 14,
               right  = 0,
               top    = 0,
               bottom = 0,
@@ -728,7 +737,6 @@ awful.screen.connect_for_each_screen(function(s)
             layout = wibox.layout.align.horizontal,
             fsbar_h,
         },
-
         { -- Список процессов
             {
               widget = process_htop,
