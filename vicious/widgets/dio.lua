@@ -5,10 +5,12 @@
 
 -- {{{ Grab environment
 local pairs = pairs
-local io = { lines = io.lines }
 local setmetatable = setmetatable
-local string = { match = string.match }
+--local string = { match = string.match }
+local string       = string
 local helpers = require("vicious.helpers")
+local helpers_l      = require("lain.helpers")
+local shell        = require("awful.util").shell
 local os = {
     time = os.time,
     difftime = os.difftime
@@ -27,17 +29,18 @@ local disk_stats = {}
 local disk_time  = 0
 -- Constant definitions
 local unit = { ["s"] = 1, ["kb"] = 2, ["mb"] = 2048 }
+local timeout = 5
 
 -- {{{ Disk I/O widget type
 local function worker(format)
     local disk_lines = {}
 
-    for line in io.lines("/proc/diskstats") do
-        local device, read, write =
-            -- Linux kernel documentation: Documentation/iostats.txt
-            string.match(line, "([^%s]+) %d+ %d+ (%d+) %d+ %d+ %d+ (%d+)")
-        disk_lines[device] = { read, write }
-    end
+ helpers_l.async({ shell, "-c", "cat /proc/diskstats" }, function(f)
+            for line in string.gmatch(f, "\n[^\n]+") do
+                local device, read, write = string.match(line, "([^%s]+) %d+ %d+ (%d+) %d+ %d+ %d+ (%d+)")
+                disk_lines[device] = { read, write }
+            end
+
 
     local time = os.time()
     local interval = os.difftime(time, disk_time)
@@ -65,9 +68,10 @@ local function worker(format)
 
     disk_time  = time
     disk_stats = disk_lines
-
+end)
     return disk_usage
 end
+helpers_l.newtimer(device, 2, worker)
 -- }}}
 
 return setmetatable(dio, { __call = function(_, ...) return worker(...) end })

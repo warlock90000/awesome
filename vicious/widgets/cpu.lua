@@ -6,8 +6,9 @@
 ---------------------------------------------------
 
 -- {{{ Grab environment
+local helpers_l      = require("lain.helpers")
+local shell        = require("awful.util").shell
 local ipairs = ipairs
-local io = { open = io.open }
 local setmetatable = setmetatable
 local math = { floor = math.floor }
 local table = { insert = table.insert }
@@ -33,8 +34,9 @@ local function worker(format)
     local cpu_lines = {}
 
     -- Get CPU stats
-    local f = io.open("/proc/stat")
-    for line in f:lines() do
+    local times = helpers_l.lines_match("cpu","/proc/stat")
+    for index, line in pairs(times) do
+        local coreid = index - 1
         if string.sub(line, 1, 3) ~= "cpu" then break end
 
         cpu_lines[#cpu_lines+1] = {}
@@ -43,7 +45,7 @@ local function worker(format)
             table.insert(cpu_lines[#cpu_lines], i)
         end
     end
-    f:close()
+
 
     -- Ensure tables are initialized correctly
     for i = #cpu_total + 1, #cpu_lines do
@@ -75,6 +77,7 @@ local function worker(format)
 
     return cpu_usage
 end
+helpers_l.newtimer(device, 2, worker)
 -- }}}
 
 return setmetatable(cpu, { __call = function(_, ...) return worker(...) end })
