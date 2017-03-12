@@ -33,6 +33,7 @@ end
 function WallpaperSlide:nextWallpaper()
 
     -- get random index
+    math.randomseed(os.clock()*100000000000)
     self.wp_index = math.random( 1, #self.wp_list)
 
     for s = 1, screen.count() do

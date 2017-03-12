@@ -31,8 +31,13 @@ theme.menu_bg_focus                             = "#202020"
 
 theme.tooltip_bg                                = "#3d3d3eb5"
 theme.widget_bg                                 = "#3d3d3eb5" -- 155D93b5
+theme.widget_bg1                                = "#3d3d3ee0"
 theme.widget_font_color                         = "#67aead"
 theme.clock_font_color                          = "#de5e1e"
+
+theme.fg_widget                                 = "#00B52A"
+theme.fg_center_widget                          = "#B87912"
+theme.fg_end_widget                             = "#B81D08"
 
 theme.base03                                    = "#202020" -- 155D93 323232 темн
 theme.base02                                    = "#3d3d3e" -- 073642 свет

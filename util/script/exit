@@ -1,0 +1,20 @@
+#!/bin/zsh
+variable=$(kdialog --radiolist "Завершение работы" 1 " Reboot" on 2 " Shutdown" off 3 "  Suspend" off 4 "  Sleep" off;)
+
+if [ "$?" = 0 ]; then
+    if [ "$variable" = 1 ]; then
+        systemctl reboot;
+    elif [ "$variable" = 2 ]; then
+        systemctl poweroff;
+    elif [ "$variable" = 3 ]; then
+        systemctl suspend;
+    elif [ "$variable" = 4 ]; then
+        systemctl hybrid-sleep;
+    else
+        kdialog --error "ERROR";
+    fi;
+elif [ "$?" = 1 ]; then
+    kdialog --sorry "YOU CHOSE CANCEL"
+else
+    kdialog --error "ERROR"
+fi
