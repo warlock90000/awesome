@@ -20,7 +20,7 @@ local color7     = "<span color=\"#00B52A\">"
 local color8     = "<span color=\"#B87912\">"
 
 local font1      = "<span font=\"Terminus Re33 Bold 13\">"
-local font2      = "<span font=\"Terminus Re33 Bold 11\">"
+local font2      = "<span font=\"Terminus Re33 Bold 10\">"
 local span_end   = "</span>"
 
 function math_round( roundIn , roundDig ) -- первый аргумент - число которое надо округлить, второй аргумент - количество символов после запятой.

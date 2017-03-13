@@ -315,151 +315,260 @@ awful.screen.connect_for_each_screen(function(s)
     -- Add widgets to the vertical wibox
     s.dock_wibox:setup {
         layout = wibox.layout.fixed.vertical,
-        { --
-          { --
-            sys,
-            layout = wibox.container.margin(sys,7,0,8,7),
+        {-- Система
+          {
+              {
+                {
+                  sys,
+                  layout = wibox.container.margin(sys,7,0,3,3),
+                },
+                {
+                  uptime,
+                  layout = wibox.container.margin(uptime,15,0,3,3),
+                },
+                layout  = wibox.layout.fixed.horizontal,
+              },
+              set_shape = function(cr, width, height)
+                    gears.shape.rounded_rect(cr, width, height)
+                  end,
+              bg                 = beautiful.widget_bg2,
+              shape_border_color = beautiful.border_color,
+              shape_border_width = 1,
+              widget             = wibox.container.background,
           },
-          { --
-            uptime,
-            layout = wibox.container.margin(uptime,15,0,0,7),
-          },
-          layout  = wibox.layout.fixed.horizontal,
+          layout = wibox.container.margin(widget,2,2,3,1),
         },
-        { -- Память текст
-            layout = wibox.layout.align.horizontal,
-            mem_txt,
+        {-- Память
+          {
+              {
+                { -- Память текст
+                  mem_txt,
+                  layout = wibox.container.margin(mem_txt,4,4,3,3),
+                },
+                { -- Память график
+                  mem_graph,
+                  layout = wibox.container.margin(mem_graph,5,5,3,3),
+                },
+                layout  = wibox.layout.fixed.vertical,
+              },
+              set_shape = function(cr, width, height)
+                    gears.shape.rounded_rect(cr, width, height)
+                  end,
+              bg                 = beautiful.widget_bg2,
+              shape_border_color = beautiful.border_color,
+              shape_border_width = 1,
+              widget             = wibox.container.background,
+          },
+          layout = wibox.container.margin(widget,2,2,1,1),
         },
-        lspace4,
-        { -- Память график
-            layout = wibox.layout.align.horizontal,
-            mem_graph,
+        {
+        {
+          {
+              { -- Проц
+                 { -- Говернер и частота
+                     cpufreq_vicious,
+                     layout = wibox.container.margin(cpufreq_vicious.widget,7,0,0,0),
+                 },
+                 { -- %
+                     cpu,
+                     layout = wibox.container.margin(cpu.widget,15,10,0,0),
+                 },
+                 layout  = wibox.layout.align.horizontal,
+              },
+                layout  = wibox.layout.align.vertical,
+              { -- Проц
+                 { -- темп проца
+                    temp_cpu.widget,
+                    layout = wibox.container.margin(temp_cpu.widget,5,0,0,0),
+                 },
+                 { -- темп матирнки
+                    temp_mb,
+                    layout = wibox.container.margin(temp_mb,15,0,0,0),
+                 },
+                 { -- темп видео
+                    temp_gpu,
+                    layout = wibox.container.margin(temp_gpu,10,6,0,0),
+                 },
+                 layout  = wibox.layout.align.horizontal,
+              },
+                layout  = wibox.layout.align.vertical,
+            { --
+              cpu_txt,
+              layout = wibox.container.margin(cpu_txt,3,0,2,3),
+            },
+              layout  = wibox.layout.align.vertical,
+
+             {
+               -- Проц графики
+                { -- цпу1 граф
+                  cpugraph0,
+                  layout = wibox.container.margin(cpugraph0,7,0,0,5),
+                },
+                {
+                  {
+                    cpupct0,
+                    widget = wibox.container.margin(cpupct0,5,0,0,0)
+                  },
+                    layout = wibox.container.rotate(widget, 'east'),
+                },
+                  layout  = wibox.layout.fixed.horizontal,
+                { -- цпу2 граф
+                  cpugraph1,
+                  layout = wibox.container.margin(cpugraph1,7,0,0,5),
+                },
+                {
+                  {
+                    cpupct1,
+                    widget = wibox.container.margin(cpupct1,5,0,0,0)
+                  },
+                    layout = wibox.container.rotate(widget, 'east'),
+                },
+                  layout  = wibox.layout.fixed.horizontal,
+                { -- цпу3 граф
+                  cpugraph2,
+                  layout = wibox.container.margin(cpugraph2,7,0,0,5),
+                },
+                {
+                  {
+                    cpupct2,
+                    widget = wibox.container.margin(cpupct2,5,0,0,0)
+                  },
+                    layout = wibox.container.rotate(widget, 'east'),
+                },
+                  layout  = wibox.layout.fixed.horizontal,
+                { -- цпу4 граф
+                  cpugraph3,
+                  layout = wibox.container.margin(cpugraph3,7,0,0,5),
+                },
+                {
+                  {
+                    cpupct3,
+                    widget = wibox.container.margin(cpupct3,5,0,0,0)
+                  },
+                    layout = wibox.container.rotate(widget, 'east'),
+                },
+                  layout  = wibox.layout.fixed.horizontal,
+             },
+                layout  = wibox.layout.fixed.vertical,
+
+          },
+               set_shape = function(cr, width, height, radius)
+                  gears.shape.rounded_rect(cr, width, height, radius)
+                end,
+                bg                 = beautiful.widget_bg2,
+                shape_border_color = beautiful.border_color,
+                shape_border_width = 1,
+                widget             = wibox.container.background,
+           },
+          layout = wibox.container.margin(widget,2,2,1,1),
         },
-        lspace5,
-        { -- Проц
-          { -- Говернер и частота
-            cpufreq_vicious,
-            layout = wibox.container.margin(cpufreq_vicious.widget,7,0,0,0),
+
+
+        {-- Сеть
+          {
+              {
+                { -- Сеть текст
+                  net_vicious,
+                  layout = wibox.container.margin(net_vicious,3,3,0,0),
+                },
+                  layout  = wibox.layout.align.vertical,
+                {
+                  { -- Сеть граф загр
+                    net_raph_d,
+                    layout = wibox.container.margin(net_raph_d,3,0,4,5),
+                  },
+                  { -- Сеть граф отдача
+                    net_raph_u,
+                    layout = wibox.container.margin(net_raph_u,5,2,3,5),
+                  },
+                  layout  = wibox.layout.fixed.horizontal,
+                },
+                layout  = wibox.layout.fixed.vertical,
+              },
+              set_shape = function(cr, width, height)
+                    gears.shape.rounded_rect(cr, width, height)
+                  end,
+              bg                 = beautiful.widget_bg2,
+              shape_border_color = beautiful.border_color,
+              shape_border_width = 1,
+              widget             = wibox.container.background,
           },
-          { -- %
-            cpu,
-            layout = wibox.container.margin(cpu.widget,15,10,0,0),
-          },
-          layout  = wibox.layout.align.horizontal
+          layout = wibox.container.margin(widget,2,2,1,1),
         },
-        lspace5,
-        { -- Проц
-          { -- темп проца
-            temp_cpu.widget,
-            layout = wibox.container.margin(temp_cpu.widget,5,0,0,0),
+        {
+          {
+            {
+              {
+                { -- /
+                  {-- / текст
+                    fstext_r,
+                    layout = wibox.container.margin(fstext_r,7,0,5,0),
+                  },
+                  { -- / I/O R
+                    fs_stat_graph_r_read,
+                    layout  = wibox.container.margin(fs_stat_graph_r_read,40,0,5,0),
+                  },
+                  { -- / I/O W
+                    fs_stat_graph_r_write,
+                    layout = wibox.container.margin(fs_stat_graph_r_write,5,0,5,0),
+                  },
+                  layout = wibox.layout.fixed.horizontal,
+                },
+                layout = wibox.layout.fixed.vertical,
+              },
+            { -- / бар
+              fsbar_r,
+              layout = wibox.container.margin(fsbar_r,3,3,0,0),
+            },
+            layout = wibox.layout.fixed.vertical,
+            { -- /home
+              {-- /home текст
+                fstext_h,
+                layout = wibox.container.margin(fstext_h,7,0,3,0),
+              },
+              { -- /home I/O R
+                fs_stat_graph_h_read,
+                layout = wibox.container.margin(fs_stat_graph_h_read,10,0,3,0),
+              },
+              { -- /home I/O W
+                fs_stat_graph_h_write,
+                layout = wibox.container.margin(fs_stat_graph_h_write,5,0,3,0),
+              },
+              layout = wibox.layout.fixed.horizontal,
+            },
+            { -- /home бар
+              fsbar_h,
+              layout = wibox.container.margin(fsbar_h,3,3,0,5),
+            },
           },
-          { -- темп матирнки
-            temp_mb,
-            layout = wibox.container.margin(temp_mb,15,0,0,0),
+              set_shape = function(cr, width, height, radius)
+                    gears.shape.rounded_rect(cr, width, height, radius)
+              end,
+              bg                 = beautiful.widget_bg2,
+              shape_border_color = beautiful.border_color,
+              shape_border_width = 1,
+              widget             = wibox.container.background,
           },
-          { -- темп видео
-            temp_gpu,
-            layout = wibox.container.margin(temp_gpu,15,0,0,0),
-          },
-          layout  = wibox.layout.fixed.horizontal
+          layout = wibox.container.margin(widget,2,2,1,1),
         },
-        lspace5,
-        cpu_txt,
-        { -- Проц графики
-          { -- цпу1 граф
-            cpugraph0,
-            layout = wibox.container.margin(cpugraph0,7,0,0,0),
+
+        {
+          {
+            { -- Список процессов
+                process_htop,
+                layout = wibox.container.margin(process_htop,15,0,3,5),
+            },
+              set_shape = function(cr, width, height)
+                    gears.shape.rounded_rect(cr, width, height)
+                  end,
+              bg                 = beautiful.widget_bg2,
+              shape_border_color = beautiful.border_color,
+              shape_border_width = 1,
+              widget             = wibox.container.background,
           },
-          { -- цпу1 текст
-              cpupct0,
-              layout = wibox.container.rotate(cpupct0, 'east'),
-          },
-          { -- цпу2 граф
-            cpugraph1,
-            layout = wibox.container.margin(cpugraph1,7,0,0,0),
-          },
-          { -- цпу2 текст
-            cpupct1,
-            layout = wibox.container.rotate(cpupct1, 'east'),
-          },
-          { -- цпу3 граф
-            cpugraph2,
-            layout = wibox.container.margin(cpugraph2,7,0,0,0),
-          },
-          { -- цпу3 текст
-            cpupct2,
-            layout = wibox.container.rotate(cpupct2, 'east'),
-          },
-          { -- цпу4 граф
-            cpugraph3,
-            layout = wibox.container.margin(cpugraph3,7,0,0,0),
-          },
-          { -- цпу4 текст
-              cpupct3,
-              layout = wibox.container.rotate(cpupct3, 'east'),
-          },
-          layout  = wibox.layout.fixed.horizontal
+          layout = wibox.container.margin(widget,2,2,1,3),
         },
-        lspace5,
-        { -- Сеть текст
-          net_vicious,
-          layout = wibox.container.margin(net_vicious,5,0,0,0),
-        },
-        lspace5,
-        { -- Сеть граф
-          { -- Сеть граф загр
-            net_raph_d,
-            layout = wibox.container.margin(net_raph_d,5,0,0,0),
-          },
-          { -- Сеть граф отдача
-            net_raph_u,
-            layout = wibox.container.margin(net_raph_u,9,0,0,0),
-          },
-          layout  = wibox.layout.fixed.horizontal,
-        },
-        lspace5,
-        { -- /
-          {-- / текст
-            fstext_r,
-            layout = wibox.container.margin(fstext_r,7,0,0,0),
-          },
-          { -- / I/O R
-            fs_stat_graph_r_read,
-            layout  = wibox.container.margin(fs_stat_graph_r_read,45,0,0,0),
-          },
-          { -- / I/O W
-            fs_stat_graph_r_write,
-            layout = wibox.container.margin(fs_stat_graph_r_write,5,0,0,0),
-          },
-          layout = wibox.layout.fixed.horizontal,
-        },
-        { -- / бар
-          layout = wibox.layout.align.horizontal,
-          fsbar_r,
-        },
-        { -- /home
-          {-- /home текст
-            fstext_h,
-            layout = wibox.container.margin(fstext_h,7,0,0,0),
-          },
-          { -- /home I/O R
-            fs_stat_graph_h_read,
-            layout = wibox.container.margin(fs_stat_graph_h_read,14,0,0,0),
-          },
-          { -- /home I/O W
-            fs_stat_graph_h_write,
-            layout = wibox.container.margin(fs_stat_graph_h_write,5,0,0,0),
-          },
-          layout = wibox.layout.fixed.horizontal,
-        },
-        { -- /home бар
-          layout = wibox.layout.align.horizontal,
-          fsbar_h,
-        },
-        { -- Список процессов
-          process_htop,
-          layout = wibox.container.margin(process_htop,15,0,0,0),
-        },
+
 --[[ fs_stat_graph_h_read
         {
           {
