@@ -1,6 +1,6 @@
 local theme                                     = {}
 
-theme.confdir                                   = os.getenv("HOME") .. "/.config/awesome/themes/"
+theme.confdir                                   = os.getenv("HOME") .. "/.config/awesome/themes/multicolor"
 --theme.wallpaper                                 = theme.confdir .. "/wall1.png"
 theme.wallpaper_dir                             = "/home/jacka/Pictures/art/-=COSPLAY=-/disharmonica.deviantart.com/1"
 theme.wallpaper                                 = theme.wallpaper_dir .. "/the_witcher___triss_merigold_cosplay_by_dzikan-dantbho.jpg"

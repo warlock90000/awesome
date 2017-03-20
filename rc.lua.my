@@ -64,7 +64,7 @@ wp_handle = require("util.wp_slideshow"):new("~/Pictures/art/222/", "fit", 60)
 wp_handle:run()
 -- }}}
 -- {{{ Theme definitions
-beautiful.init(awful.util.get_configuration_dir() .. "/themes/theme.lua")
+beautiful.init(awful.util.get_configuration_dir() .. "/themes/multicolor/theme.lua")
 -- }}}
 
 -- {{{ Variable
