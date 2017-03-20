@@ -10,5 +10,15 @@ function pack_name {
     yaourt -Qua | grep -v $ign
 }
 
-"$1"
+if [ "$?" = 0 ]; then
+    if [ "$1" = "pack_count" ]; then
+        pack_count;
+    elif [ "$1" = "pack_name" ]; then
+        pack_name;
+    else
+        echo "ERROR1";
+    fi;
+else
+    echo "ERROR"
+fi
 exit

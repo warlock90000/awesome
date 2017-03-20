@@ -303,7 +303,7 @@ awful.screen.connect_for_each_screen(function(s)
     }
 
        --------------------------- Create the vertical wibox
-    s.dockheight = (49 *  s.workarea.height)/100
+    s.dockheight = (52 *  s.workarea.height)/100
 
     s.dock_wibox = wibox({ screen = s, x=0, y=s.workarea.height/2 - s.dockheight/2, width = 300, height = s.dockheight, fg = beautiful.menu_fg_normal, bg = beautiful.widget_bg1, ontop = true, visible = true, type = "dock" })
     gears.surface.apply_shape_bounding(s.dock_wibox, dockshape)
@@ -475,7 +475,7 @@ awful.screen.connect_for_each_screen(function(s)
                 {
                   { -- Сеть граф загр
                     net_raph_d,
-                    layout = wibox.container.margin(net_raph_d,3,0,4,5),
+                    layout = wibox.container.margin(net_raph_d,5,0,4,5),
                   },
                   { -- Сеть граф отдача
                     net_raph_u,
@@ -556,7 +556,7 @@ awful.screen.connect_for_each_screen(function(s)
           {
             { -- Список процессов
                 process_htop,
-                layout = wibox.container.margin(process_htop,15,0,3,5),
+                layout = wibox.container.margin(process_htop,15,0,5,0),
             },
               set_shape = function(cr, width, height)
                     gears.shape.rounded_rect(cr, width, height)
@@ -566,38 +566,34 @@ awful.screen.connect_for_each_screen(function(s)
               shape_border_width = 1,
               widget             = wibox.container.background,
           },
-          layout = wibox.container.margin(widget,2,2,1,3),
+          layout = wibox.container.margin(widget,2,2,1,1),
         },
 
---[[ fs_stat_graph_h_read
-        {
+        { --
           {
-            {
-              widget = cpugraph0,
-            },
-              left   = 2,
-              right  = 160,
-              top    = 10,
-              bottom = 10,
-              widget = wibox.container.margin
+              {
+                { -- Баланс
+                  balans_widget,
+                  layout = wibox.container.margin(sys,7,0,3,3),
+                },
+                {
+                  ext_ip,
+                  layout = wibox.container.margin(uptime,15,0,3,3),
+                },
+                layout  = wibox.layout.fixed.horizontal,
+              },
+              set_shape = function(cr, width, height)
+                    gears.shape.rounded_rect(cr, width, height)
+                  end,
+              bg                 = beautiful.widget_bg2,
+              shape_border_color = beautiful.border_color,
+              shape_border_width = 1,
+              widget             = wibox.container.background,
           },
-          {
-            {
-              widget = cpupct0,
-            },
-              left   = -150,
-              right  = 0,
-              top    = 0,
-              bottom = 0,
-              widget = wibox.container.margin
-          },
-                left   = 0,
-                right  = 0,
-                top    = 0,
-                bottom = 0,
-                widget = wibox.container.margin
+          layout = wibox.container.margin(widget,2,2,1,1),
         },
-]]--
+
+
     }
 
     -- Add toggling functionalities
@@ -607,6 +603,7 @@ awful.screen.connect_for_each_screen(function(s)
     s.docktimer:connect_signal("timeout", function()
         s = awful.screen.focused()
         s.dock_wibox.width = 1
+        s.dock_wibox.y = s.workarea.height/2 - s.dockheight/2
         if not s.docktimer.started then
             s.docktimer:start()
         end
@@ -631,6 +628,7 @@ awful.screen.connect_for_each_screen(function(s)
     s.dock_wibox:connect_signal("mouse::enter", function()
         s = awful.screen.focused()
         s.dock_wibox.width = 300
+        s.dock_wibox.y = s.workarea.height/2 - s.dockheight/2
         gears.surface.apply_shape_bounding(s.dock_wibox, dockshape)
           s.dock_wibox_timer:connect_signal("timeout", function()
             s.dock_wibox.width = 1

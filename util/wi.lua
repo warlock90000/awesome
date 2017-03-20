@@ -21,6 +21,8 @@ local color8     = "<span color=\"#B87912\">"
 
 local font1      = "<span font=\"Terminus Re33 Bold 13\">"
 local font2      = "<span font=\"Terminus Re33 Bold 10\">"
+local font3      = "<span font=\"Terminus Re33 Bold 11\">"
+local font4      = "<span font=\"Terminus Re33 Bold 12\">"
 local span_end   = "</span>"
 
 function math_round( roundIn , roundDig ) -- первый аргумент - число которое надо округлить, второй аргумент - количество символов после запятой.
@@ -93,7 +95,13 @@ myweather = lain.widget.weather({
 --========= fs =========--
 vicious.cache(vicious.widgets.dio)
 vicious.cache(vicious.widgets.fs)
-
+--[[
+hdd_temp = awful.widget.watch("hddtemp /dev/sdb | awk '{print $3}'", 60,
+  function(widget, stdout)
+    widget:set_markup(markup.font("Terminus Re33 Bold 11", markup("#00B52A", stdout)))
+    return
+  end)
+]]--
 fstext_r = wibox.widget {
     color            = beautiful.fg_normal,
     background_color = beautiful.bg_normal,
@@ -576,22 +584,6 @@ local function display()
 end
 display()
 
-local function pack_count()
-    local cmd = [[zsh -c '~/.config/awesome/util/script/pacm.sh pack_count']]
-    awful.spawn.easy_async(cmd, function(stdout)
-        local c = stdout
-    count = c
-    end)
-    return count
-end
-helpers.newtimer(device, 180, pack_count)
-
-pkg_upd_timer = gears.timer{ timeout = 180 }
-if not pkg_upd_timer.started then
-            pkg_upd_timer:start()
-end
-
-pkg_upd_count = wibox.widget.textbox()
 pkg_upd_icons = wibox.widget.textbox()
 
 pkg_upd_icons:set_markup(markup.font("PacFont Bold 11", markup(beautiful.widget_font_color, "C--- ")))
@@ -600,25 +592,25 @@ pkg_upd_icons:connect_signal('mouse::enter', function ()
       text          = string.format('<span font_desc="%s">%s</span>', "Terminus Re33 Bold 13", display()),
       timeout       = 10,
       position      = "top_right",
-      bg            = beautiful.widget_bg1,
+      bg            = beautiful.widget_bg,
       screen        = capi.mouse.screen
     })
   end)
 
-pkg_upd_timer:connect_signal("timeout", function()
-      if tonumber(pack_count()) > 0 then
-        pkg_upd_count:set_markup(markup.font("Terminus Re33 Bold 13", markup(beautiful.red, pack_count())))
-      else
-        pkg_upd_count:set_markup(markup.font("Terminus Re33 Bold 13", markup(beautiful.widget_font_color, "OK")))
-      end
-      if not pkg_upd_timer.started then
-        pkg_upd_timer:start()
-      end
-  end)
 pkg_upd_icons:buttons(awful.util.table.join(
     awful.button({ }, 1, function () awful.spawn.with_shell('uxterm -geometry 90x10 -T Updating -e bash -c "sudo yaourt -Sy && pauseme"') end),
     awful.button({ }, 3, function () awful.spawn.with_shell('urxvt -T Updating -e bash -c "sudo yaourt -Sua && pauseme"') end)
 ))
+
+pkg_upd_count = awful.widget.watch('zsh -c "~/.config/awesome/util/script/pacm.sh pack_count"', 600,
+  function(widget, stdout)
+      if tonumber(stdout) > 0 then
+        widget:set_markup(markup.font("Terminus Re33 Bold 13", markup(beautiful.red, stdout)))
+      else
+        widget:set_markup(markup.font("Terminus Re33 Bold 13", markup(beautiful.widget_font_color, "OK")))
+      end
+    return
+  end)
 --========= PKG =========--
 --========= Net =========--
 vicious.cache(vicious.widgets.net)
@@ -791,3 +783,17 @@ local mpdwidget = lain.widget.mpd({
     end
 })
 --========= MPD =========--
+--========= Balans =========--
+balans_widget = awful.widget.watch("zsh -c '~/.config/awesome/util/script/balans'", 6000,
+  function(widget, stdout)
+    widget:set_markup(markup.font("Terminus Re33 Bold 11", markup("#00B52A", stdout)))
+    return
+  end)
+--========= Balans =========--
+--========= Ext. IP =========--
+ext_ip = awful.widget.watch('wget -O - -q icanhazip.com', 600,
+  function(widget, stdout)
+    widget:set_markup(markup.font("Terminus Re33 Bold 11", markup("#B87912", "IP:"..stdout)))
+    return
+  end)
+--========= Ext. IP =========--
