@@ -797,19 +797,3 @@ ext_ip = awful.widget.watch('wget -O - -q icanhazip.com', 600,
     return
   end)
 --========= Ext. IP =========--
---[[
-ck1 = wibox.widget {
-      checked       = true,
-      color         = beautiful.bg_normal,
-      paddings      = 2,
-      shape         = gears.shape.losange,
-      widget        = wibox.widget.checkbox
-    }
-ck2 = wibox.widget {
-      checked       = true,
-      color         = beautiful.bg_normal,
-      paddings      = 2,
-      shape         = gears.shape.losange,
-      widget        = wibox.widget.checkbox
-    }
-]]--
