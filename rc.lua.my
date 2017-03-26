@@ -8,10 +8,11 @@ local naughty       = require("naughty")
 local lain          = require("lain")
 local freedesktop   = require("freedesktop")
 local hotkeys_popup = require("awful.hotkeys_popup").widget
-local tyrannical = require("tyrannical")
+local tyrannical    = require("tyrannical")
 local vicious       = require("vicious")
+--local xdg_menu      = require("archmenu") -- (yaourt -S archlinux-xdg-menu)
 --local vicious_contrib = require("vicious.contrib")
---local radical       = require("radical")
+local radical       = require("radical")
 --local blingbling    = require("blingbling")
 -- }}}
 
@@ -50,12 +51,8 @@ awful.spawn.with_shell("compton &")
 -- }}}
 
 awful.spawn.with_shell("hsetroot -solid \"#000000\"")
---awful.spawn.with_shell("compton -cCfF -t-5 -l-5 -o.55 -D2 -m.85 --backend glx &")
---awful.spawn.with_shell("xcompmgr -r 12.00 -o 0.75 -l 15.00 -t 15.00 -I 0.028 -O 0.03 -D 10.0 -c -C -F -n &")
 
---run_once("qterminal")
 run_once("urxvtd &")
---run_once("subl")
 
 --run_once("~/bin/start.sh &")
 
@@ -86,13 +83,115 @@ lain.layout.termfair.ncol           = 1
 lain.layout.termfair.center.nmaster = 3
 lain.layout.termfair.center.ncol    = 1
 -- }}}
+local script = awful.util.get_configuration_dir() .. "/util/script/"
 
+--== radical ==--
+local exit_dialog = radical.box
+  {
+    item_width=62,
+    item_height=32,
+    style = radical.style.classic,
+    border_width = 2,
+    layout = radical.layout.horizontal,
+    item_layout = radical.layout.centerred,
+    item_style = radical.item.style.basic,
+    autodiscard = false
+  }
+
+  exit_dialog.margins.top = 3
+  exit_dialog.margins.bottom = 3
+
+  exit_dialog:add_item{text="Shutdown", button1 = function() awful.util.spawn("systemctl poweroff") end}
+  exit_dialog:add_item{text="Reboot", button1 = function() awful.util.spawn("systemctl reboot") end}
+  exit_dialog:add_item{text="Suspend", button1 = function() awful.util.spawn("systemctl suspend") end}
+  exit_dialog:add_item{text="Sleep", button1 = function() awful.util.spawn("systemctl hybrid-sleep") end}
+  exit_dialog:add_item{text="Cancel", button1 = function() exit_dialog.visible = false end}
+
+local exit_menu = radical.context {
+        style      = radical.style.classic      ,
+        item_style = radical.item.style.arrow_prefix ,
+        item_height = 18,--48,
+        width = 140,
+        layout = radical.layout.vertical, --horizontal,
+        border_width = 2,
+        border_color = "#88aa00",
+        item_layout = radical.layout.centerred
+    }
+  exit_menu:add_item{text="Shutdown", button1 = function() awful.util.spawn("systemctl poweroff") end}
+  exit_menu:add_item{text="Reboot", button1 = function() awful.util.spawn("systemctl reboot") end}
+  exit_menu:add_item{text="Suspend", button1 = function() awful.util.spawn("systemctl suspend") end}
+  exit_menu:add_item{text="Sleep", button1 = function() awful.util.spawn("systemctl hybrid-sleep") end}
+  exit_menu:add_item{text="Cancel", button1 = function() exit_menu.visible = false end}
+
+
+local customMenu = require( "customMenu" )
+local app_menu = nil
+local bar_menu = radical.context {
+        style      = radical.style.arrow,
+        arrow_type = 0,
+        item_style = radical.item.style.arrow_prefix ,
+        width = 140,
+        layout = radical.layout.vertical, --horizontal,
+        --border_width = 2,
+        --border_color = "#88aa00",
+        spacing  = 3,
+        item_layout = radical.layout.centerred
+    }
+
+bar_menu:add_item {
+    text     = beautiful.apps_title or "Apps",
+    --icon     = beautiful.launcher_icon,
+    bg_used  = beautiful.bar_bg_buttons or beautiful.menu_bg_normal,
+    --spacing  = 4,
+    sub_menu = function()
+        if not app_menu then
+            app_menu = customMenu.appmenu (
+            { -- Main menu
+                max_items   = 20,
+                style       = beautiful.button_menu_style or radical.style.arrow,
+                item_style  = beautiful.button_menu_menu_item_style or radical.item.style.classic,
+            }
+           ,{ -- Sub menus
+                max_items   = 20,
+                style       = beautiful.button_menu_style or radical.style.arrow,
+                item_style  = beautiful.button_menu_menu_item_style or radical.item.style.classic
+            })
+        end
+        return app_menu
+    end
+}
+bar_menu:add_item{text="Wine",sub_menu = function()
+  local smenu = radical.context{}
+    smenu:add_item{text="TC_Aion", button1 = function() awful.util.spawn(script .. "tc_aion") end}
+    smenu:add_item{text="TC", button1 = function() awful.util.spawn(script .. "tc") end}
+    smenu:add_item{text="Photoshop CS6 x32", button1 = function() awful.util.spawn(script .. "p_shop") end}
+    smenu:add_item{text="Aion", button1 = function() awful.util.spawn(script .. "aion") end}
+    smenu:add_item{text="Tera", button1 = function() awful.util.spawn(script .. "tera") end}
+    smenu:add_item{text="Rift", button1 = function() awful.util.spawn(script .. "rift") end}
+    smenu:add_item{text="Cancel", icon = beautiful.cancel, button1 = function() smenu.visible = false end}
+    return smenu
+  end}
+bar_menu:add_item{text="Cancel", button1 = function() bar_menu.visible = false end}
+bar_menu:add_item {text="Exit",sub_menu = function()
+  local smenu = radical.context{width = 140,}
+    smenu:add_item{text="Shutdown", icon = beautiful.shutdown, button1 = function() awful.util.spawn("systemctl poweroff") end}
+    smenu:add_item{text="Reboot", icon = beautiful.restart, button1 = function() awful.util.spawn("systemctl reboot") end}
+    smenu:add_item{text="Suspend", icon = beautiful.suspend, button1 = function() awful.util.spawn("systemctl suspend") end}
+    smenu:add_item{text="Sleep", icon = beautiful.sleep, button1 = function() awful.util.spawn("systemctl hybrid-sleep") end}
+    smenu:add_item{text="Cancel", icon = beautiful.cancel, button1 = function() smenu.visible = false end}
+    return smenu
+  end}
+
+a = wibox.widget.imagebox()
+a:set_image(beautiful.launcher_icon)
+a:set_menu(bar_menu)
+
+--== radical ==--
 local tags = require("util.tags")
 local wi = require("util.wi")
 
-local script = awful.util.get_configuration_dir() .. "/util/script/"
-
 -- {{{ Menu
+--[[
 local myawesomemenu = {
     { "hotkeys", function() return false, hotkeys_popup.show_help end },
     { "manual", terminal .. " -e man awesome" },
@@ -101,6 +200,8 @@ local myawesomemenu = {
 local myexit = {
     { " Exit", function() awful.util.spawn(script .. "exit")     end },
     { " Logout",   function() awesome.quit()                              end },
+    { "test", function () exit_dialog.visible = true end},
+    { "test1", function () exit_menu.visible = true end},
     { "Restart Awesome", awesome.restart }
 }
 local wine = {
@@ -111,6 +212,7 @@ local wine = {
     { "Tera",    function() awful.util.spawn(script .. "tera") end },
     { "Rift",    function() awful.util.spawn(script .. "rift") end },
 }
+
 local mymainmenu = freedesktop.menu.build({
     before = {
         { "Wine", wine, beautiful.awesome_icon },
@@ -121,10 +223,19 @@ local mymainmenu = freedesktop.menu.build({
         { "Exit", myexit, beautiful.launcher_icon },
     }
 })
+]]--
+--[[
+local mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu},
+                                          { "Applications", xdgmenu },
+                                          { "Wine", wine },
+                                          { "Exit", myexit }
+                                        }
+                              })
+]]--
+--mylauncher = awful.widget.launcher({ image = beautiful.launcher_icon, menu = mymainmenu })
 
-mylauncher = awful.widget.launcher({ image = beautiful.launcher_icon,
-                                     menu = mymainmenu })
 -- }}}
+
 
 local wiboks = require("util.wiboks")
 
@@ -141,14 +252,18 @@ awful.mouse.snap.edge_enabled     = false
 awful.mouse.drag_to_tag.enabled   = true
 
 -- }}}
-
+local alttab = require("radical.impl.alttab")
 -- {{{ Key bindings
 globalkeys = awful.util.table.join(
---[[  меню на текущем клиенте
-    awful.key({ modkey }, "Tab", function()
-      lain.util.menu_clients_current_tags(myexit)
-    end),
-]]--
+
+    awful.key({ modkey,           }, "Tab"   , function () alttab.altTab()          end ),
+    awful.key({ modkey, "Shift"   }, "Tab"   , function () alttab.altTabBack()      end ),
+    awful.key({ "Mod1",           }, "Tab"   , function () alttab.altTab({auto_release=true})          end ),
+    awful.key({ "Mod1", "Shift"   }, "Tab"   , function () alttab.altTabBack({auto_release=true})      end ),
+
+    awful.key({ modkey, "Control"   }, "a", lain.util.move_to_new_tag(),
+          {description = "add a tag with the focused client", group = "tag"}),
+
     -- Take a screenshot
     -- https://github.com/copycat-killer/dots/blob/master/bin/screenshot
     awful.key({ altkey }, "p", function() os.execute("screenshot") end),
@@ -346,14 +461,6 @@ globalkeys = awful.util.table.join(
     -- Menubar
     awful.key({ modkey }, "p", function() menubar.show() end,
               {description = "show the menubar", group = "launcher"})
-    --]]
-
-    --[[ dmenu
-    awful.key({ modkey }, "x", function ()
-        awful.spawn(string.format("dmenu_run -i -fn 'Tamsyn' -nb '%s' -nf '%s' -sb '%s' -sf '%s'",
-        beautiful.bg_normal, beautiful.fg_normal, beautiful.bg_focus, beautiful.fg_focus))
-		end)
-    --]]
 )
 
 clientkeys = awful.util.table.join(
@@ -392,6 +499,7 @@ clientkeys = awful.util.table.join(
 -- Bind all key numbers to tags.
 -- Be careful: we use keycodes to make it works on any keyboard layout.
 -- This should map on the top row of your keyboard, usually 1 to 9.
+
 for i = 1, 9 do
     globalkeys = awful.util.table.join(globalkeys,
         -- View tag only.
@@ -438,6 +546,7 @@ for i = 1, 9 do
                   {description = "toggle focused client on tag #" .. i, group = "tag"})
     )
 end
+
 
 clientbuttons = awful.util.table.join(
     awful.button({ }, 1, function (c) client.focus = c; c:raise() end),

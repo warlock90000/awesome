@@ -80,6 +80,13 @@ theme.layout_fullscreen                         = theme.confdir .. "/icons/fulls
 theme.layout_magnifier                          = theme.confdir .. "/icons/magnifier.png"
 theme.layout_floating                           = theme.confdir .. "/icons/floating.png"
 
+theme.shutdown                                  = theme.confdir .. "/icons/shutdown.png"
+theme.restart                                   = theme.confdir .. "/icons/restart.png"
+theme.suspend                                   = theme.confdir .. "/icons/suspend.png"
+theme.sleep                                     = theme.confdir .. "/icons/suspend.png"
+theme.cancel                                    = theme.confdir .. "/icons/cancel.png"
+
+
 theme.titlebar_close_button_normal              = theme.confdir .. "/icons/titlebar/close_normal.png"
 theme.titlebar_close_button_focus               = theme.confdir .. "/icons/titlebar/close_focus.png"
 theme.titlebar_minimize_button_normal           = theme.confdir .. "/icons/titlebar/minimize_normal.png"

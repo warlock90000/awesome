@@ -39,11 +39,12 @@ lspace4.forced_height = 2
 lspace5.forced_height = 5
 
 local tag_menu = {
-    { "Добавить тег",       function() lain.util.add_tag()     end },
-    { "Переименовать тег",  function() lain.util.rename_tag()  end },
-    { "Тег влево",          function() lain.util.move_tag(1)   end },
-    { "Тег враво",          function() lain.util.move_tag(-1)  end },
-    { "Удалить тег",        function() lain.util.delete_tag()  end }
+    { "Add tag",            function() lain.util.add_tag()     end },
+    { "Ren tag",            function() lain.util.rename_tag()  end },
+    { "Tag left",           function() lain.util.move_tag(1)   end },
+    { "Tag right",          function() lain.util.move_tag(-1)  end },
+    { "Del tag",            function() lain.util.delete_tag()  end },
+    { "Mv client->new tag", function() lain.util.move_to_new_tag()       end }
 }
 
 -- {{{ Wibox
@@ -125,8 +126,9 @@ awful.screen.connect_for_each_screen(function(s)
             {
               {
                 {
-                  mylauncher,
-                  layout = wibox.container.margin(mylauncher,5,15,0,0),
+                  --mylauncher,
+                  a,
+                  layout = wibox.container.margin(mylauncher,15,15,0,0),
                 },
                 bg = beautiful.base02,
                 set_shape = function(cr, width, height)
@@ -593,7 +595,6 @@ awful.screen.connect_for_each_screen(function(s)
           layout = wibox.container.margin(widget,2,2,1,1),
         },
 
-
     }
 
     -- Add toggling functionalities
@@ -642,3 +643,42 @@ awful.screen.connect_for_each_screen(function(s)
 
 end)
 -- }}}
+--[[
+dock_wibox1 = wibox({x=1500, y=300, width = 300, height = 300, fg = beautiful.menu_fg_normal, bg = beautiful.widget_bg, ontop = true, visible = true, type = "dock" })
+    gears.surface.apply_shape_bounding(dock_wibox1, dockshape)
+
+dock_wibox1:connect_signal("mouse::leave", function()
+        dock_wibox1.width = 1
+    end)
+
+dock_wibox1:connect_signal("mouse::enter", function()
+        dock_wibox1.width = 300
+        gears.surface.apply_shape_bounding(dock_wibox1, dockshape)
+    end)
+
+dock_wibox1:setup {
+        layout = wibox.layout.fixed.vertical,
+{
+
+    { --
+      ck1,
+      layout = wibox.container.margin(sys,7,197,3,3),
+    },
+    {
+      ck2,
+      layout = wibox.container.margin(uptime,7,197,30,3),
+    },
+      layout  = wibox.layout.fixed.vertical,
+  },
+
+
+}
+ck1:connect_signal("mouse::enter", function()
+    if ck1.checked == true then
+      ck1.checked = false
+    elseif ck1.checked == false then
+      ck1.checked = true
+    end
+    end)
+
+]]--

@@ -45,7 +45,7 @@ tyrannical.tags = {
         screen      = 1,
         force_screen = true,
         layout      = awful.layout.suit.max,
-        class = {"Vlc", "bomi", "Freetuxtv", "mpv"}
+        class = {"Vlc", "bomi", "Freetuxtv", "mpv", "webtorrent"}
     },
     {
         name        = "",
