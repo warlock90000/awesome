@@ -24,7 +24,7 @@ theme.launcher_icon                             = theme.confdir .. "/icons/aweso
 theme.menu_border_width                         = 2
 theme.menu_width                                = 230
 theme.menu_submenu_icon                         = theme.confdir .. "/icons/submenu.png"
-theme.menu_fg_normal                            = "#67aead"
+theme.menu_fg_normal                            = "#C7C7C7" -- 67aead
 theme.menu_fg_focus                             = "#155D93"
 theme.menu_bg_normal                            = "#3d3d3e"
 theme.menu_bg_focus                             = "#202020"
@@ -33,12 +33,12 @@ theme.tooltip_bg                                = "#3d3d3eb5"
 theme.widget_bg                                 = "#3d3d3eb5" -- 155D93b5
 theme.widget_bg1                                = "#3d3d3e0f" -- 3d3d3ee0
 theme.widget_bg2                                = "#535355FF"
-theme.widget_font_color                         = "#67aead"
+theme.widget_font_color                         = "#ffffff" -- 67aead
 theme.clock_font_color                          = "#de5e1e"
 
-theme.fg_widget                                 = "#00B52A"
-theme.fg_center_widget                          = "#B87912"
-theme.fg_end_widget                             = "#B81D08"
+theme.fg_widget                                 = "#969696" -- 00B52A
+theme.fg_center_widget                          = "#B87912" -- B87912
+theme.fg_end_widget                             = "#B81D08" -- B81D08
 
 theme.base03                                    = "#202020" -- 155D93 323232 темн
 theme.base02                                    = "#3d3d3e" -- 073642 свет
@@ -79,6 +79,10 @@ theme.layout_max                                = theme.confdir .. "/icons/max.p
 theme.layout_fullscreen                         = theme.confdir .. "/icons/fullscreen.png"
 theme.layout_magnifier                          = theme.confdir .. "/icons/magnifier.png"
 theme.layout_floating                           = theme.confdir .. "/icons/floating.png"
+theme.layout_cornernw                           = theme.confdir .. "/icons/cornernww.png"
+theme.layout_cornerne                           = theme.confdir .. "/icons/cornernew.png"
+theme.layout_cornersw                           = theme.confdir .. "/icons/cornersww.png"
+theme.layout_cornerse                           = theme.confdir .. "/icons/cornersew.png"
 
 theme.shutdown                                  = theme.confdir .. "/icons/shutdown.png"
 theme.restart                                   = theme.confdir .. "/icons/restart.png"

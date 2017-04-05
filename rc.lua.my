@@ -77,6 +77,27 @@ local browser    = "palemoon"
 local gui_editor = "subl"
 local graphics   = "xnview"
 -- }}}
+awful.layout.layouts = {
+  awful.layout.suit.floating,
+  awful.layout.suit.tile,
+  awful.layout.suit.tile.left,
+  awful.layout.suit.tile.bottom,
+  awful.layout.suit.tile.top,
+  awful.layout.suit.fair,
+  awful.layout.suit.fair.horizontal,
+  awful.layout.suit.spiral,
+  awful.layout.suit.spiral.dwindle,
+  awful.layout.suit.max,
+  awful.layout.suit.max.fullscreen,
+  awful.layout.suit.magnifier,
+  awful.layout.suit.corner.nw,
+  lain.layout.cascade,
+  lain.layout.cascade.tile,
+  lain.layout.centerwork,
+  lain.layout.centerwork.horizontal,
+  lain.layout.termfair,
+  lain.layout.termfair.center,
+}
 -- lain
 lain.layout.termfair.nmaster        = 3
 lain.layout.termfair.ncol           = 1
@@ -320,7 +341,8 @@ globalkeys = awful.util.table.join(
             awful.client.focus.bydirection("right")
             if client.focus then client.focus:raise() end
         end),
-    awful.key({ modkey,           }, "w", function () mymainmenu:show() end,
+    --awful.key({ modkey,           }, "w", function () mymainmenu:show() end,
+    awful.key({ modkey,           }, "w", function () bar_menu.visible = true end,
               {description = "show main menu", group = "awesome"}),
 
     -- Layout manipulation
@@ -591,11 +613,37 @@ awful.rules.rules = {
     },
 
     -- Titlebars
+    { rule_any = {
+        instance = {
+          "DTA",  -- Firefox addon DownThemAll.
+          "copyq",  -- Includes session name in class.
+        },
+        class = {
+          "Arandr",
+          "Gpick",
+          "Kruler",
+          "MessageWin",  -- kalarm.
+          "Sxiv",
+          "Wpa_gui",
+          "pinentry",
+          "veromix",
+          "xtightvncviewer"},
+
+        name = {
+          "Event Tester",  -- xev.
+        },
+        role = {
+          "AlarmWindow",  -- Thunderbird's calendar.
+          "pop-up",       -- e.g. Google Chrome's (detached) Developer Tools.
+        }
+      }, properties = { floating = true }},
     { rule_any = { type = { "dialog", "normal" } },
       properties = { titlebars_enabled = false } },
     { rule = { class = "Gimp", role = "gimp-image-window" },
           properties = { maximized_horizontal = true,
                          maximized_vertical = true } },
+
+        --awful.spawn.with_shell('xprop -name "ncmpcpp 0.7.7" -f WM_CLASS 8s -set WM_CLASS "URxvt:ncmpcpp"')
 
 }
 -- }}}

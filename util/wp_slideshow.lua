@@ -57,6 +57,10 @@ function WallpaperSlide:run()
   self.notifier({text = "Картинки меняются через " .. self.timer.timeout .. " сек."})
   self.notifier({text = #self.wp_list .. " картинок в списке."})
 
+  if not self.timer.started then
+    self:nextWallpaper()
+  end
+
   self.timer:connect_signal("timeout", function()
     self:nextWallpaper()
   end)

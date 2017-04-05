@@ -5,6 +5,11 @@ local wibox         = require("wibox")
 local beautiful     = require("beautiful")
 local lain          = require("lain")
 
+--[[ -- Radical tag
+local rad_taglist  = require( "radical.impl.taglist"       )
+local rad_tag      = require( "radical.impl.common.tag"    )
+]]-- -- Radical tag
+
 -- {{{ Theme definitions
 beautiful.init(awful.util.get_configuration_dir() .. "/themes/multicolor/theme.lua")
 -- }}}
@@ -152,24 +157,53 @@ awful.screen.connect_for_each_screen(function(s)
               },
               layout = wibox.container.margin(widget,0,-13,0,0),
             },
+            --[[ -- Radical tag
+            {
+              {
+                { --
+                    rad_taglist(s)._internal.margin,
+                    layout = wibox.container.margin(nil,0,0,0,0),
+                },
+                  bg = beautiful.base02,
+                    set_shape = function(cr, width, height)
+                      gears.shape.rounded_bar(cr, width, height)
+                    end,
+                  widget             = wibox.container.background,
+              },
+              layout = wibox.container.margin(widget,12,5,1,1),
+            },
+            ]]-- -- Radical tag
             {
               {
                 {
                   s.mypromptbox,
                   layout = wibox.container.margin(s.mypromptbox,15,15,0,0),
                 },
-                bg = beautiful.base03,
-                set_shape = function(cr, width, height)
-                  gears.shape.rounded_bar(cr, width, height)
-                end,
-                widget = wibox.container.background
+                  bg = beautiful.base03,
+                  set_shape = function(cr, width, height)
+                    gears.shape.rounded_bar(cr, width, height)
+                  end,
+                  widget = wibox.container.background
+                },
+                 layout = wibox.container.margin(widget,0,-13,0,0),
               },
-              layout = wibox.container.margin(widget,0,-13,0,0),
             },
-        },
-        --s.mytasklist, -- Middle widget
-        nil,
-        { -- Right widgets
+        -----------------------------------------------
+          {
+            {
+              { -- MPD
+                  mpdwidget.widget,
+                  layout = wibox.container.margin(mpdwidget.widget,17,0,0,0),
+              },
+                bg = beautiful.base02,
+                  set_shape = function(cr, width, height)
+                    gears.shape.rounded_bar(cr, width, height)
+                  end,
+                widget = wibox.container.background,
+            },
+            layout = wibox.container.margin(widget,52,52,1,1),
+          },
+          { -- Right widgets
             layout = wibox.layout.fixed.horizontal,
 
             {
@@ -305,7 +339,7 @@ awful.screen.connect_for_each_screen(function(s)
     }
 
        --------------------------- Create the vertical wibox
-    s.dockheight = (52 *  s.workarea.height)/100
+    s.dockheight = (51 *  s.workarea.height)/100
 
     s.dock_wibox = wibox({ screen = s, x=0, y=s.workarea.height/2 - s.dockheight/2, width = 300, height = s.dockheight, fg = beautiful.menu_fg_normal, bg = beautiful.widget_bg1, ontop = true, visible = true, type = "dock" })
     gears.surface.apply_shape_bounding(s.dock_wibox, dockshape)
@@ -322,7 +356,7 @@ awful.screen.connect_for_each_screen(function(s)
               {
                 {
                   sys,
-                  layout = wibox.container.margin(sys,7,0,3,3),
+                  layout = wibox.container.margin(sys,10,0,3,3),
                 },
                 {
                   uptime,
@@ -368,12 +402,12 @@ awful.screen.connect_for_each_screen(function(s)
           {
               { -- Проц
                  { -- Говернер и частота
-                     cpufreq_vicious,
-                     layout = wibox.container.margin(cpufreq_vicious.widget,7,0,0,0),
+                     cpu,
+                     layout = wibox.container.margin(cpu.widget,4,0,2,2),
                  },
                  { -- %
-                     cpu,
-                     layout = wibox.container.margin(cpu.widget,15,10,0,0),
+                     cpufreq_vicious,
+                     layout = wibox.container.margin(cpufreq_vicious.widget,15,10,0,0),
                  },
                  layout  = wibox.layout.align.horizontal,
               },
@@ -381,7 +415,7 @@ awful.screen.connect_for_each_screen(function(s)
               { -- Проц
                  { -- темп проца
                     temp_cpu.widget,
-                    layout = wibox.container.margin(temp_cpu.widget,5,0,0,0),
+                    layout = wibox.container.margin(temp_cpu.widget,9,0,0,0),
                  },
                  { -- темп матирнки
                     temp_mb,
@@ -471,7 +505,7 @@ awful.screen.connect_for_each_screen(function(s)
               {
                 { -- Сеть текст
                   net_vicious,
-                  layout = wibox.container.margin(net_vicious,3,3,0,0),
+                  layout = wibox.container.margin(net_vicious,5,3,0,0),
                 },
                   layout  = wibox.layout.align.vertical,
                 {
@@ -504,11 +538,11 @@ awful.screen.connect_for_each_screen(function(s)
                 { -- /
                   {-- / текст
                     fstext_r,
-                    layout = wibox.container.margin(fstext_r,7,0,5,0),
+                    layout = wibox.container.margin(fstext_r,7,-8,5,0),
                   },
                   { -- / I/O R
                     fs_stat_graph_r_read,
-                    layout  = wibox.container.margin(fs_stat_graph_r_read,40,0,5,0),
+                    layout  = wibox.container.margin(fs_stat_graph_r_read,50,0,5,0),
                   },
                   { -- / I/O W
                     fs_stat_graph_r_write,

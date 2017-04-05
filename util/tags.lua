@@ -107,7 +107,7 @@ tyrannical.tags = {
         screen      = 2,
         force_screen = true,
         layout      = awful.layout.suit.max,
-        class = {"Audacious"}
+        class = {"Audacious", "ncmpcpp", "URxvt:ncmpcpp"}
     },
     {
         name        = "",
@@ -145,7 +145,7 @@ tyrannical.properties.placement = {
     kcalc = awful.placement.centered
 }
 tyrannical.properties.centered = {
-    "kcalc" , "Qalculate-gtk" , "Pavucontrol"
+    "kcalc" , "Qalculate-gtk" , "Pavucontrol", "ncmpcpp"
 }
 tyrannical.settings.block_children_focus_stealing = true --Block popups ()
 tyrannical.settings.group_children = true
