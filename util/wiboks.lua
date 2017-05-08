@@ -4,6 +4,7 @@ local awful         = require("awful")
 local wibox         = require("wibox")
 local beautiful     = require("beautiful")
 local lain          = require("lain")
+local radical       = require("radical")
 
 --[[ -- Radical tag
 local rad_taglist  = require( "radical.impl.taglist"       )
@@ -51,6 +52,42 @@ local tag_menu = {
     { "Del tag",            function() lain.util.delete_tag()  end },
     { "Mv client->new tag", function() lain.util.move_to_new_tag()       end }
 }
+
+local l_m = wibox.widget.imagebox()
+local l_menu = radical.context {
+        width = 35,
+        layout = radical.layout.vertical,
+        border_width = 2,
+        border_color = "#88aa00",
+        item_layout = radical.layout.centerred
+    }
+  l_menu:add_item{icon = beautiful.layout_floating, button1 = function() awful.layout.set(awful.layout.suit.floating); l_menu.visible = false end}
+  l_menu:add_item{icon = beautiful.layout_tile, button1 = function() awful.layout.set(awful.layout.suit.tile); l_menu.visible = false end}
+  l_menu:add_item{icon = beautiful.layout_tileleft, button1 = function() awful.layout.set(awful.layout.suit.tile.left); l_menu.visible = false end}
+  l_menu:add_item{icon = beautiful.layout_tilebottom, button1 = function() awful.layout.set(awful.layout.suit.tile.bottom); l_menu.visible = false end}
+  l_menu:add_item{icon = beautiful.layout_tiletop, button1 = function() awful.layout.set(awful.layout.suit.tile.top); l_menu.visible = false end}
+  l_menu:add_item{icon = beautiful.layout_fairv, button1 = function() awful.layout.set(awful.layout.suit.fair); l_menu.visible = false end}
+  l_menu:add_item{icon = beautiful.layout_fairh, button1 = function() awful.layout.set(awful.layout.suit.fair.horizontal); l_menu.visible = false end}
+  l_menu:add_item{icon = beautiful.layout_spiral, button1 = function() awful.layout.set(awful.layout.suit.spiral); l_menu.visible = false end}
+  l_menu:add_item{icon = beautiful.layout_dwindle, button1 = function() awful.layout.set(awful.layout.suit.spiral.dwindle); l_menu.visible = false end}
+  l_menu:add_item{icon = beautiful.layout_max, button1 = function() awful.layout.set(awful.layout.suit.max); l_menu.visible = false end}
+  l_menu:add_item{icon = beautiful.layout_fullscreen, button1 = function() awful.layout.set(awful.layout.suit.max.fullscreen); l_menu.visible = false end}
+  l_menu:add_item{icon = beautiful.layout_magnifier, button1 = function() awful.layout.set(awful.layout.suit.magnifier); l_menu.visible = false end}
+  --[[
+  l_menu:add_item{icon = beautiful.layout_cornernw, button1 = function() awful.layout.set(awful.layout.suit.corner.nw); l_menu.visible = false end}
+
+  l_menu:add_item{icon = beautiful.layout_cornerse, button1 = function() awful.layout.set(lain.layout.cascade); l_menu.visible = false end}
+  l_menu:add_item{icon = beautiful.layout_cornerse, button1 = function() awful.layout.set(lain.layout.cascade.tile); l_menu.visible = false end}
+  l_menu:add_item{icon = beautiful.layout_cornerse, button1 = function() awful.layout.set(lain.layout.centerwork); l_menu.visible = false end}
+  l_menu:add_item{icon = beautiful.layout_cornerse, button1 = function() awful.layout.set(lain.layout.centerwork.horizontal); l_menu.visible = false end}
+  l_menu:add_item{icon = beautiful.layout_cornerse, button1 = function() awful.layout.set(lain.layout.termfair); l_menu.visible = false end}
+  l_menu:add_item{icon = beautiful.layout_cornerse, button1 = function() awful.layout.set(lain.layout.termfair.center); l_menu.visible = false end}
+  ]]--
+  l_menu:add_item{text="Cnl", button1 = function() l_menu.visible = false end}
+
+
+l_m.menu = l_menu
+
 
 -- {{{ Wibox
 -- Create a wibox for each screen and add it
@@ -109,18 +146,19 @@ awful.screen.connect_for_each_screen(function(s)
     -- We need one layoutbox per screen.
     s.mylayoutbox = awful.widget.layoutbox(s)
     s.mylayoutbox:buttons(awful.util.table.join(
-                           awful.button({ }, 1, function () awful.layout.inc( 1) end),
-                           awful.button({ }, 3, function () awful.layout.inc(-1) end),
+                           --awful.button({ }, 1, function () awful.layout.inc( 1) end),
+                           --awful.button({ }, 3, function () awful.layout.inc(-1) end),
                            awful.button({ }, 4, function () awful.layout.inc( 1) end),
                            awful.button({ }, 5, function () awful.layout.inc(-1) end)))
-
-    -- Create a taglist widget
+    s.mylayoutbox.menu = l_menu
+    --========= Create a taglist widget =========--
     s.mytaglist = awful.widget.taglist(s, awful.widget.taglist.filter.all, taglist_buttons)
-
-    -- Create a tasklist widget
-    s.mytasklist = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, tasklist_buttons, { bg_focus = "#00000000" })
-
-    -- Create the wibox
+    --========= Create a taglist widget =========--
+    --========= Create a tasklist widget =========--
+    s.mytasklist = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, tasklist_buttons, { bg_focus = "#393f3f" })
+    --s.mytasklist = awful.widget.tasklist(s, awful.widget.tasklist.filter.focused, tasklist_buttons, { align = "center" }, { bg_focus = "#00000000" })
+    --========= Create a tasklist widget =========--
+    --========= Create the wibox =========--
     s.mywibox = awful.wibar({ position = "top", screen = s, height = 20 })
 
     -- Add widgets to the wibox
@@ -189,20 +227,54 @@ awful.screen.connect_for_each_screen(function(s)
               },
             },
         -----------------------------------------------
-          {
             {
-              { -- MPD
-                  mpdwidget.widget,
-                  layout = wibox.container.margin(mpdwidget.widget,17,0,0,0),
+              {
+                {
+                  {
+                    { -- MPD toggle
+                      icon_control_toggle,
+                      layout = wibox.container.margin(icon_control_toggle,7,0,1,1),
+                    },
+                    { -- MPD prev
+                      icon_control_prev,
+                      layout = wibox.container.margin(icon_control_prev,1,0,1,1),
+                    },
+                    { -- MPD next
+                      icon_control_next,
+                      layout = wibox.container.margin(icon_control_next,1,0,1,1),
+                    },
+                    { -- MPD next
+                      icon_control_stop,
+                      layout = wibox.container.margin(icon_control_stop,1,7,1,1),
+                    },
+                    layout  = wibox.layout.fixed.horizontal,
+                  },
+                    bg = beautiful.base02,
+                      set_shape = function(cr, width, height)
+                        gears.shape.rounded_bar(cr, width, height)
+                      end,
+                    widget = wibox.container.background,
+                },
+                layout = wibox.container.margin(widget,0,0,0,0),
               },
-                bg = beautiful.base02,
-                  set_shape = function(cr, width, height)
-                    gears.shape.rounded_bar(cr, width, height)
-                  end,
-                widget = wibox.container.background,
-            },
-            layout = wibox.container.margin(widget,52,52,1,1),
+              {
+                  {
+                    {
+                      mpdwidget.widget,
+                      layout = wibox.container.place,
+                    },
+                    bg = beautiful.base02,
+                    set_shape = function(cr, width, height)
+                      gears.shape.rounded_bar(cr, width, height, (height / 2) * (-1))
+                      --gears.shape.powerline(cr, width, height, (height / 2) * (-1))
+                    end,
+                    widget = wibox.container.background
+                  },
+                  layout = wibox.container.margin(widget,0,0,0,0),
+              },
+              layout = wibox.layout.align.horizontal,
           },
+      -----------------------------------------------
           { -- Right widgets
             layout = wibox.layout.fixed.horizontal,
 
@@ -407,86 +479,86 @@ awful.screen.connect_for_each_screen(function(s)
                  },
                  { -- %
                      cpufreq_vicious,
-                     layout = wibox.container.margin(cpufreq_vicious.widget,15,10,0,0),
+                     layout = wibox.container.margin(cpufreq_vicious.widget,77,10,0,0),
                  },
-                 layout  = wibox.layout.align.horizontal,
+                 layout  = wibox.layout.stack,
               },
                 layout  = wibox.layout.align.vertical,
               { -- Проц
                  { -- темп проца
                     temp_cpu.widget,
-                    layout = wibox.container.margin(temp_cpu.widget,9,0,0,0),
+                    layout = wibox.container.margin(temp_cpu.widget,9,0,0,3),
                  },
                  { -- темп матирнки
                     temp_mb,
-                    layout = wibox.container.margin(temp_mb,15,0,0,0),
+                    layout = wibox.container.margin(temp_mb,15,0,0,3),
                  },
                  { -- темп видео
                     temp_gpu,
-                    layout = wibox.container.margin(temp_gpu,10,6,0,0),
+                    layout = wibox.container.margin(temp_gpu,10,6,0,3),
                  },
                  layout  = wibox.layout.align.horizontal,
               },
                 layout  = wibox.layout.align.vertical,
-            { --
-              cpu_txt,
-              layout = wibox.container.margin(cpu_txt,3,0,2,3),
+            {
+              { --
+                cpu_txt,
+                layout = wibox.container.margin(cpu_txt,3,0,2,6),
+              },
+               {
+                 -- Проц графики
+                  { -- цпу1 граф
+                    cpugraph0,
+                    layout = wibox.container.margin(cpugraph0,7,0,0,5),
+                  },
+                  {
+                    {
+                      cpupct0,
+                      widget = wibox.container.margin(cpupct0,5,0,0,0)
+                    },
+                      layout = wibox.container.rotate(widget, 'east'),
+                  },
+                    layout  = wibox.layout.fixed.horizontal,
+                  { -- цпу2 граф
+                    cpugraph1,
+                    layout = wibox.container.margin(cpugraph1,7,0,0,5),
+                  },
+                  {
+                    {
+                      cpupct1,
+                      widget = wibox.container.margin(cpupct1,5,0,0,0)
+                    },
+                      layout = wibox.container.rotate(widget, 'east'),
+                  },
+                    layout  = wibox.layout.fixed.horizontal,
+                  { -- цпу3 граф
+                    cpugraph2,
+                    layout = wibox.container.margin(cpugraph2,7,0,0,5),
+                  },
+                  {
+                    {
+                      cpupct2,
+                      widget = wibox.container.margin(cpupct2,5,0,0,0)
+                    },
+                      layout = wibox.container.rotate(widget, 'east'),
+                  },
+                    layout  = wibox.layout.fixed.horizontal,
+                  { -- цпу4 граф
+                    cpugraph3,
+                    layout = wibox.container.margin(cpugraph3,7,0,0,5),
+                  },
+                  {
+                    {
+                      cpupct3,
+                      widget = wibox.container.margin(cpupct3,5,0,0,0)
+                    },
+                      layout = wibox.container.rotate(widget, 'east'),
+                  },
+                    layout  = wibox.layout.fixed.horizontal,
+               },
+                  layout  = wibox.layout.stack,
             },
               layout  = wibox.layout.align.vertical,
-
-             {
-               -- Проц графики
-                { -- цпу1 граф
-                  cpugraph0,
-                  layout = wibox.container.margin(cpugraph0,7,0,0,5),
-                },
-                {
-                  {
-                    cpupct0,
-                    widget = wibox.container.margin(cpupct0,5,0,0,0)
-                  },
-                    layout = wibox.container.rotate(widget, 'east'),
-                },
-                  layout  = wibox.layout.fixed.horizontal,
-                { -- цпу2 граф
-                  cpugraph1,
-                  layout = wibox.container.margin(cpugraph1,7,0,0,5),
-                },
-                {
-                  {
-                    cpupct1,
-                    widget = wibox.container.margin(cpupct1,5,0,0,0)
-                  },
-                    layout = wibox.container.rotate(widget, 'east'),
-                },
-                  layout  = wibox.layout.fixed.horizontal,
-                { -- цпу3 граф
-                  cpugraph2,
-                  layout = wibox.container.margin(cpugraph2,7,0,0,5),
-                },
-                {
-                  {
-                    cpupct2,
-                    widget = wibox.container.margin(cpupct2,5,0,0,0)
-                  },
-                    layout = wibox.container.rotate(widget, 'east'),
-                },
-                  layout  = wibox.layout.fixed.horizontal,
-                { -- цпу4 граф
-                  cpugraph3,
-                  layout = wibox.container.margin(cpugraph3,7,0,0,5),
-                },
-                {
-                  {
-                    cpupct3,
-                    widget = wibox.container.margin(cpupct3,5,0,0,0)
-                  },
-                    layout = wibox.container.rotate(widget, 'east'),
-                },
-                  layout  = wibox.layout.fixed.horizontal,
-             },
-                layout  = wibox.layout.fixed.vertical,
-
           },
                set_shape = function(cr, width, height, radius)
                   gears.shape.rounded_rect(cr, width, height, radius)
@@ -503,11 +575,18 @@ awful.screen.connect_for_each_screen(function(s)
         {-- Сеть
           {
               {
-                { -- Сеть текст
-                  net_vicious,
-                  layout = wibox.container.margin(net_vicious,5,3,0,0),
+                {
+                  {-- сеть загр
+                    net_vicious1,
+                    layout = wibox.container.margin(fstext_r,7,0,2,0),
+                  },
+                  { -- сеть отдача
+                    net_vicious2,
+                    layout  = wibox.container.margin(fs_stat_graph_r_read,155,0,2,0),
+                  },
+                    layout = wibox.layout.stack,
                 },
-                  layout  = wibox.layout.align.vertical,
+                layout  = wibox.layout.fixed.horizontal,
                 {
                   { -- Сеть граф загр
                     net_raph_d,
@@ -515,7 +594,7 @@ awful.screen.connect_for_each_screen(function(s)
                   },
                   { -- Сеть граф отдача
                     net_raph_u,
-                    layout = wibox.container.margin(net_raph_u,5,2,3,5),
+                    layout = wibox.container.margin(net_raph_u,5,0,4,5),
                   },
                   layout  = wibox.layout.fixed.horizontal,
                 },
@@ -542,13 +621,13 @@ awful.screen.connect_for_each_screen(function(s)
                   },
                   { -- / I/O R
                     fs_stat_graph_r_read,
-                    layout  = wibox.container.margin(fs_stat_graph_r_read,50,0,5,0),
+                    layout  = wibox.container.margin(fs_stat_graph_r_read,173,66,5,0),
                   },
                   { -- / I/O W
                     fs_stat_graph_r_write,
-                    layout = wibox.container.margin(fs_stat_graph_r_write,5,0,5,0),
+                    layout = wibox.container.margin(fs_stat_graph_r_write,235,6,5,0),
                   },
-                  layout = wibox.layout.fixed.horizontal,
+                  layout = wibox.layout.stack,
                 },
                 layout = wibox.layout.fixed.vertical,
               },
@@ -564,13 +643,13 @@ awful.screen.connect_for_each_screen(function(s)
               },
               { -- /home I/O R
                 fs_stat_graph_h_read,
-                layout = wibox.container.margin(fs_stat_graph_h_read,10,0,3,0),
+                layout = wibox.container.margin(fs_stat_graph_h_read,173,66,5,0),
               },
               { -- /home I/O W
                 fs_stat_graph_h_write,
-                layout = wibox.container.margin(fs_stat_graph_h_write,5,0,3,0),
+                layout = wibox.container.margin(fs_stat_graph_h_write,235,6,5,0),
               },
-              layout = wibox.layout.fixed.horizontal,
+              layout = wibox.layout.stack,
             },
             { -- /home бар
               fsbar_h,
@@ -608,13 +687,17 @@ awful.screen.connect_for_each_screen(function(s)
         { --
           {
               {
-                { -- Баланс
-                  balans_widget,
+                {
+                  net_icon,
                   layout = wibox.container.margin(sys,7,0,3,3),
                 },
                 {
                   ext_ip,
-                  layout = wibox.container.margin(uptime,15,0,3,3),
+                  layout = wibox.container.margin(sys,2,0,3,3),
+                },
+                { -- Баланс
+                  balans_widget,
+                  layout = wibox.container.margin(uptime,12,0,3,3),
                 },
                 layout  = wibox.layout.fixed.horizontal,
               },

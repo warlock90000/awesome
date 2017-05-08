@@ -1,0 +1,18 @@
+#!/bin/sh
+
+TODAY=`vnstat | grep "today"`
+TODAY_RX=`echo $TODAY | awk '{print $2 $3}'`
+TODAY_TX=`echo $TODAY | awk '{print $5 $6}'`
+
+CW=`vnstat -w | grep "current week"`
+CW_RX=`echo $CW | awk '{print $3 $4}'`
+CW_TX=`echo $CW | awk '{print $6 $7}'`
+
+DATE=`date +"%b"`
+MONTH=`vnstat -m | grep $DATE`
+MONTH_RX=`echo $MONTH | awk '{print $3 $4}'`
+MONTH_TX=`echo $MONTH | awk '{print $6 $7}'`
+
+echo "Сегодня: "$TODAY_RX" - "$TODAY_TX
+echo "Неделя:  "$CW_RX" - "$CW_TX
+echo "Месяц:   "$MONTH_RX" - "$MONTH_TX

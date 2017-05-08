@@ -41,7 +41,7 @@ theme.fg_center_widget                          = "#B87912" -- B87912
 theme.fg_end_widget                             = "#B81D08" -- B81D08
 
 theme.base03                                    = "#202020" -- 155D93 323232 темн
-theme.base02                                    = "#3d3d3e" -- 073642 свет
+theme.base02                                    = "#383d3d" -- 073642 свет, 3d3d3e
 theme.base01                                    = "#586e75"
 theme.base00                                    = "#657b83"
 theme.base0                                     = "#839496"
@@ -90,6 +90,7 @@ theme.suspend                                   = theme.confdir .. "/icons/suspe
 theme.sleep                                     = theme.confdir .. "/icons/suspend.png"
 theme.cancel                                    = theme.confdir .. "/icons/cancel.png"
 
+theme.widget_note_on                            = theme.confdir .. "/icons/note_on.png"
 
 theme.titlebar_close_button_normal              = theme.confdir .. "/icons/titlebar/close_normal.png"
 theme.titlebar_close_button_focus               = theme.confdir .. "/icons/titlebar/close_focus.png"

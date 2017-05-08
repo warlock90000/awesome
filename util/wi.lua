@@ -635,8 +635,14 @@ pkg_upd_count = awful.widget.watch('zsh -c "~/.config/awesome/util/script/pacm.s
 --========= Net =========--
 vicious.cache(vicious.widgets.net)
 
-net_vicious = wibox.widget.textbox()
-vicious.register(net_vicious, vicious.widgets.net, color3.."⬇ "..span_end..font2.."${enp3s0 rx_mb}M".." ✦ ".."${enp3s0 down_kb}K"..span_end..color3.." ✦ ".."⬆ "..span_end..font2.."${enp3s0 tx_mb}M".." ✦ ".."${enp3s0 up_kb}K"..span_end, 5)
+net_vicious1 = wibox.widget.textbox()
+net_vicious2 = wibox.widget.textbox()
+
+vicious.register(wibox.widget, vicious.widgets.net,
+            function (widget, args)
+              net_vicious1.markup = color3.."⬇ "..span_end..font2..tostring(args["{enp3s0 rx_mb}"]).."M ✦ "..tonumber(args["{enp3s0 down_kb}"]).."K"..span_end
+              net_vicious2.markup = color3.."⬆ "..span_end..font2..tostring(args["{enp3s0 tx_mb}"]).."M ✦ "..tostring(args["{enp3s0 up_kb}"]).."K"..span_end
+            end, 5)
 
 net_raph_d = wibox.widget {
             forced_height     = 25,
@@ -766,17 +772,64 @@ function vnstat_image:show4()
       end)
 end
 
-net_vicious:connect_signal("mouse::enter", function () vnstat_image:show() end)
-net_vicious:connect_signal("mouse::leave", function () vnstat_image:hide() end)
-net_vicious:buttons(awful.util.table.join(
+net_vicious1:connect_signal("mouse::enter", function () vnstat_image:show() end)
+net_vicious1:connect_signal("mouse::leave", function () vnstat_image:hide() end)
+net_vicious1:buttons(awful.util.table.join(
     awful.button({ }, 1, function () vnstat_image:show1() end),
     awful.button({ }, 3, function () vnstat_image:show2() end),
     awful.button({ }, 9, function () vnstat_image:show3() end),
     awful.button({ }, 8, function () vnstat_image:show4() end)
     ))
---========= Net =========--
+
+net_icon = awful.widget.watch("zsh -c '~/.config/awesome/util/script/check_inet'", 60,
+  function(widget, stdout)
+    if tonumber(stdout) == 1 then
+      widget.markup = font2..color7..""..span_end..span_end
+    elseif tonumber(stdout) == 0 then
+      widget.markup = font2..color2..""..span_end..span_end
+      naughty.notify({ preset = naughty.config.presets.critical,
+                         title = "Шо та таки не то!",
+                         text = "Нет интернета!" })
+    else
+      widget.markup = stdout
+    end
+    return
+  end)
+--========= Net =========-- color2 -bad, color7 -good
 --========= MPD =========--
-local mpdicon   = wibox.widget.imagebox()
+function format_time(s)
+   return string.format("%d:%.2d", math.floor(s/60), s%60)
+end
+
+function mpd_toggle(s)
+  awful.spawn.with_shell("mpc toggle || ncmpc toggle || pms toggle")
+  mpdwidget.update()
+end
+function mpd_stop(s)
+  awful.spawn.with_shell("mpc stop || ncmpc stop || pms stop")
+  mpdwidget.update()
+end
+function mpd_prev(s)
+  awful.spawn.with_shell("mpc prev || ncmpc prev || pms prev")
+  mpdwidget.update()
+end
+function mpd_next(s)
+  awful.spawn.with_shell("mpc next || ncmpc next || pms next")
+  mpdwidget.update()
+end
+function open_ncmpcpp(s)
+  local script = awful.util.get_configuration_dir() .. "/util/script/"
+  awful.spawn.with_shell(script.."ncmpcpp_start")
+end
+
+icon_control_toggle = wibox.widget.textbox()
+icon_control_prev   = wibox.widget.textbox()
+  icon_control_prev.markup = color5.." "..span_end
+icon_control_next   = wibox.widget.textbox()
+  icon_control_next.markup = color5.." "..span_end
+icon_control_stop   = wibox.widget.textbox()
+  icon_control_stop.markup = color5.." "..span_end
+
 mpdwidget = lain.widget.mpd({
     settings    = function()
         mpd_notification_preset = {
@@ -785,24 +838,41 @@ mpdwidget = lain.widget.mpd({
         }
 
         if mpd_now.state == "play" then
-            artist = mpd_now.artist .. " > "
-            title  = mpd_now.title .. " "
-            mpdicon.image = beautiful.widget_note_on
+            artist = mpd_now.artist .. "  "
+            album  = mpd_now.album ..  "  "
+            title  = mpd_now.title
+            time   = string.format(" (%s/%s)", format_time(mpd_now.elapsed),format_time(mpd_now.time))
+            pls    = string.format("[%s/%s] ", mpd_now.pls_pos,mpd_now.pls_len)
+            icon_control_toggle.markup = color5.." "..span_end
+            icon_control_prev.markup   = color5.." "..span_end
+            icon_control_next.markup   = color5.." "..span_end
+            icon_control_stop.markup   = color5.." "..span_end
         elseif mpd_now.state == "pause" then
-            artist = "mpd "
-            title  = "paused "
+            artist = mpd_now.artist .. "  "
+            album  = mpd_now.album ..  "  "
+            title  = mpd_now.title
+            time   = string.format(" (%s/%s)", format_time(mpd_now.elapsed),format_time(mpd_now.time))
+            pls    = string.format("[%s/%s] ", mpd_now.pls_pos,mpd_now.pls_len)
+            icon_control_toggle.markup = color5.." "..span_end
         else
             artist = ""
+            album  = ""
             title  = ""
-            --mpdicon:set_image() -- not working in 4.0
-            mpdicon._private.image = nil
-            mpdicon:emit_signal("widget::redraw_needed")
-            mpdicon:emit_signal("widget::layout_changed")
-            mpdwidget:hide()
+            time   = ""
+            pls    = ""
+            icon_control_toggle.markup = color5.." "..span_end
+            icon_control_prev.markup   = ""
+            icon_control_next.markup   = ""
+            icon_control_stop.markup   = ""
         end
-        widget.markup = markup.font("Terminus Re33 Bold 11", markup("#e54c62", artist)) .. markup.font("Terminus Re33 Bold 11", markup("#b2b2b2", title))
+        widget.markup = font3..color9..pls..span_end..span_end..font3..color2..artist..span_end..span_end..font3..color1..album..span_end..span_end..font3..color3..title..span_end..span_end..font3..color9..time..span_end..span_end
     end
 })
+icon_control_toggle:connect_signal("button::press", function () mpd_toggle()   end)
+icon_control_prev:connect_signal  ("button::press", function () mpd_prev()     end)
+icon_control_next:connect_signal  ("button::press", function () mpd_next()     end)
+icon_control_stop:connect_signal  ("button::press", function () mpd_stop()     end)
+mpdwidget.widget:connect_signal   ("button::press", function () open_ncmpcpp() end)
 --========= MPD =========--
 --========= Balans =========--
 balans_widget = awful.widget.watch("zsh -c '~/.config/awesome/util/script/balans'", 6000,

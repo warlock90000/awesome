@@ -188,8 +188,23 @@ bar_menu:add_item{text="Wine",sub_menu = function()
     smenu:add_item{text="Photoshop CS6 x32", button1 = function() awful.util.spawn(script .. "p_shop") end}
     smenu:add_item{text="Aion", button1 = function() awful.util.spawn(script .. "aion") end}
     smenu:add_item{text="Tera", button1 = function() awful.util.spawn(script .. "tera") end}
+    smenu:add_item{text="Tera1", button1 = function() awful.util.spawn(script .. "tera1") end}
     smenu:add_item{text="Rift", button1 = function() awful.util.spawn(script .. "rift") end}
     smenu:add_item{text="Cancel", icon = beautiful.cancel, button1 = function() smenu.visible = false end}
+    return smenu
+  end}
+bar_menu:add_item{text="ACE Stream",sub_menu = function()
+  local smenu = radical.context{}
+    smenu:add_item{text="детские", button1 = function() awful.util.spawn("acestreamplayer http://super-pomoyka.us.to/trash/ttv-list/ttv.child.player.m3u") end}
+    smenu:add_item{text="общие", button1 = function() awful.util.spawn("acestreamplayer http://super-pomoyka.us.to/trash/ttv-list/ttv.common.player.m3u") end}
+    smenu:add_item{text="познавательные", button1 = function() awful.util.spawn("acestreamplayer http://super-pomoyka.us.to/trash/ttv-list/ttv.discover.player.m3u") end}
+    smenu:add_item{text="развлекательные", button1 = function() awful.util.spawn("acestreamplayer http://super-pomoyka.us.to/trash/ttv-list/ttv.ent.player.m3u") end}
+    smenu:add_item{text="фильмы", button1 = function() awful.util.spawn("acestreamplayer http://super-pomoyka.us.to/trash/ttv-list/ttv.film.player.m3u") end}
+    smenu:add_item{text="музыкальные", button1 = function() awful.util.spawn("acestreamplayer http://super-pomoyka.us.to/trash/ttv-list/ttv.music.player.m3u") end}
+    smenu:add_item{text="новости", button1 = function() awful.util.spawn("acestreamplayer http://super-pomoyka.us.to/trash/ttv-list/ttv.news.player.m3u") end}
+    smenu:add_item{text="HD", button1 = function() awful.util.spawn("acestreamplayer http://super-pomoyka.us.to/trash/ttv-list/ttv.HD.player.m3u") end}
+    smenu:add_item{text="Cancel", icon = beautiful.cancel, button1 = function() smenu.visible = false end}
+
     return smenu
   end}
 bar_menu:add_item{text="Cancel", button1 = function() bar_menu.visible = false end}
@@ -270,7 +285,7 @@ root.buttons(awful.util.table.join(
 awful.mouse.snap.edge_enabled     = false
 --awful.mouse.snap.client_enabled = false
 -- перетащить окно на соседний тэг мышью
-awful.mouse.drag_to_tag.enabled   = true
+awful.mouse.drag_to_tag.enabled   = false
 
 -- }}}
 local alttab = require("radical.impl.alttab")
@@ -602,7 +617,6 @@ awful.rules.rules = {
       properties = { border_width = beautiful.border_width,
                      border_color = beautiful.border_normal,
                      focus = awful.client.focus.filter,
-                     border_width = 0,
                      raise = true,
                      keys = clientkeys,
                      buttons = clientbuttons,

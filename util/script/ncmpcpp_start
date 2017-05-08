@@ -1,0 +1,9 @@
+#!/bin/bash
+
+xyz=`pgrep -u $USER -x ncmpcpp`
+if [ -n "$xyz" ]
+then
+    echo "return"
+else
+    urxvtc -name 'ncmpcpp' -e ncmpcpp
+fi
