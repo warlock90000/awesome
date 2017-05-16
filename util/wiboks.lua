@@ -352,8 +352,15 @@ awful.screen.connect_for_each_screen(function(s)
             {
               {
                 {
-                  myweather.widget,
-                  layout = wibox.container.margin(myweather.widget,10,10,0,0),
+                  {
+                    icon_widget,
+                    layout = wibox.container.margin(icon_widget,10,-7,0,0),
+                  },
+                  {
+                    myweather.widget,
+                    layout = wibox.container.margin(myweather.widget,10,10,0,0),
+                  },
+                  layout  = wibox.layout.fixed.horizontal,
                 },
                 bg = beautiful.base03,
                 set_shape = function(cr, width, height)

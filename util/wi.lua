@@ -81,6 +81,51 @@ lain.widget.calendar({
   --========= Calendar =========--
 --========= Textclock =========--
 --========= Weather =========--ConkyWeather bold 11
+icon_widget = wibox.widget.imagebox()
+--local path_to_icons = "/usr/share/icons/Arc/status/symbolic/"
+local path_to_icons = "/usr/share/icons/Papirus-Dark/symbolic/status/"
+local icon_map = {
+    ["01d"] = "weather-clear-symbolic.svg",
+    ["02d"] = "weather-few-clouds-symbolic.svg",
+    ["03d"] = "weather-clouds-symbolic.svg",
+    ["04d"] = "weather-overcast-symbolic.svg",
+    ["09d"] = "weather-showers-scattered-symbolic.svg",
+    ["10d"] = "weather-showers-symbolic.svg",
+    ["11d"] = "weather-storm-symbolic.svg",
+    ["13d"] = "weather-snow-symbolic.svg",
+    ["50d"] = "weather-fog-symbolic.svg",
+    ["01n"] = "weather-clear-night-symbolic.svg",
+    ["02n"] = "weather-few-clouds-night-symbolic.svg",
+    ["03n"] = "weather-clouds-night-symbolic.svg",
+    ["04n"] = "weather-overcast-symbolic.svg",
+    ["09n"] = "weather-showers-scattered-symbolic.svg",
+    ["10n"] = "weather-showers-symbolic.svg",
+    ["11n"] = "weather-storm-symbolic.svg",
+    ["13n"] = "weather-snow-symbolic.svg",
+    ["50n"] = "weather-fog-symbolic.svg"
+}
+--[[
+local path_to_icons = "/usr/share/icons/oxygen/base/128x128/status/"
+local icon_map = {
+    ["01d"] = "weather-clear.png",
+    ["02d"] = "weather-few-clouds.png",
+    ["03d"] = "weather-clouds.png",
+    ["04d"] = "weather-overcast.png",
+    ["09d"] = "weather-showers-scattered.png",
+    ["10d"] = "weather-showers.png",
+    ["11d"] = "weather-storm.png",
+    ["13d"] = "weather-snow.png",
+    ["50d"] = "weather-fog.png",
+    ["01n"] = "weather-clear-night.png",
+    ["02n"] = "weather-few-clouds-night.png",
+    ["03n"] = "weather-clouds-night.png",
+    ["04n"] = "weather-overcast.png",
+    ["09n"] = "weather-showers-scattered.png",
+    ["10n"] = "weather-showers.png",
+    ["11n"] = "weather-storm.png",
+    ["13n"] = "weather-snow.png",
+    ["50n"] = "weather-fog.png"
+}]]--
 myweather = lain.widget.weather({
     city_id = 520494,
     weather_na_markup = markup(beautiful.widget_font_color, "N/A "),
@@ -88,9 +133,10 @@ myweather = lain.widget.weather({
     settings = function()
         descr = weather_now["weather"][1]["description"]:lower()
         units = math.floor(weather_now["main"]["temp"])
-        icons = weather_now["weather"][1]["icon"] .. ".png"
+        icons = weather_now["weather"][1]["icon"]
         --widget:set_markup(markup.font("Hack 9", markup(beautiful.widget_font_color, " " .. descr .. " | " .. units .. "°C ")))
-        widget.markup = markup.font("Terminus Re33 Bold 13", markup(beautiful.widget_font_color, " "..color9..units.."°C "..span_end))
+        icon_widget.image = path_to_icons .. icon_map[icons]
+        widget.markup = markup.font("Terminus Re33 Bold 13", markup(beautiful.widget_font_color, color9..units.."°C "..span_end))
     end
 })
 --========= Weather =========--
