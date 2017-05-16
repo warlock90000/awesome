@@ -544,39 +544,6 @@ vicious.register(mem_graph, vicious.widgets.mem,
   end , 5 )
 --========= Mem =========--
 --========= Audio =========--
---[[
-volumewidget = wibox.widget{
-      markup        = pulseaudio.volume_info_c(),
-      widget        = wibox.widget.textbox,
-      font          = "Terminus Re33 Bold 13",
-}
-volumewidget1 = wibox.widget{
-      max_value     = 112,
-      forced_height = 20,
-      forced_width  = 70,
-      bar_shape     = gears.shape.rounded_rect,
-      bar_height    = 3,
-      bar_color     = beautiful.base03,
-      handle_color  = beautiful.widget_font_color,
-      handle_shape  = gears.shape.circle,
-      value         = pulseaudio.volume_info_for_bar(),
-      widget        = wibox.widget.slider,
-}
-
-volumewidget1:buttons(awful.util.table.join(
-  awful.button({ }, 2, function() pulseaudio.volume_mute(); volumewidget1.value = pulseaudio.volume_info_for_bar(); volumewidget.markup = pulseaudio.volume_info_c() end),
-  awful.button({ }, 3, function() awful.util.spawn("pavucontrol") end),
-  awful.button({ }, 4, function() pulseaudio.volume_change("+3db"); volumewidget1.value = pulseaudio.volume_info_for_bar(); volumewidget.markup = pulseaudio.volume_info_c() end),
-  awful.button({ }, 5, function() pulseaudio.volume_change("-3db"); volumewidget1.value = pulseaudio.volume_info_for_bar(); volumewidget.markup = pulseaudio.volume_info_c() end)
-))
-
-volumetimer = timer({ timeout = 31 })
-volumetimer:connect_signal("timeout", function() volumewidget.markup = pulseaudio.volume_info_c() end)
-volumetimer:start()
-volumetimer1 = timer({ timeout = 31 })
-volumetimer1:connect_signal("widget::redraw_needed", function() volumewidget1.value = pulseaudio.volume_info_for_bar() end)
-volumetimer1:start()
-]]--
 soundicon = wibox.widget{
     font                = "Terminus Re33 Bold 13",
     widget              = wibox.widget.textbox
@@ -764,7 +731,7 @@ function vnstat_image:show()
     icon              = net_summary,
     position          = 'top_left',
     timeout           = 20,
-    bg                = beautiful.widget_bg,
+    bg                = beautiful.widget_bg2
     })
 end
 
@@ -776,7 +743,7 @@ function vnstat_image:show1()
     icon              = net_summary_h,
     position          = 'top_left',
     timeout           = 20,
-    bg                = beautiful.widget_bg,
+    bg                = beautiful.widget_bg2
     })
 end
 
@@ -785,35 +752,35 @@ function vnstat_image:show2()
     local conn_stat   = [[bash -c 'lsof -i |grep ESTABLISHED']]
     awful.spawn.easy_async(conn_stat, function(stdout, stderr, reason, exit_code)
       naughty.notify {
-        text          = color4 .. stdout .. span_end,
+        text          = color3 .. stdout .. span_end,
         position      = 'top_right',
         timeout       = 50,
-        bg            = beautiful.widget_bg,
+        bg            = beautiful.widget_bg2
       }
       end)
 end
 
 function vnstat_image:show3()
     self:hide()
-    local conn_stat   = [[bash -c 'vnstat -h | xargs -0 notify-send -t 0']]
+    local conn_stat   = [[bash -c 'vnstat -h']]
     awful.spawn.easy_async(conn_stat, function(stdout, stderr, reason, exit_code)
       naughty.notify {
-        text          = color4 .. stdout .. span_end,
+        text          = color3 .. stdout .. span_end,
         position      = 'top_right',
         timeout       = 50,
-        bg            = beautiful.widget_bg,
+        bg            = beautiful.widget_bg2
       }
       end)
 end
 
 function vnstat_image:show4()
     self:hide()
-    local conn_stat   = [[bash -c 'vnstat -d | xargs -0 notify-send -t 0']]
+    local conn_stat   = [[bash -c 'vnstat -d']]
     awful.spawn.easy_async(conn_stat, function(stdout, stderr, reason, exit_code)
       naughty.notify {
-        text          = color4 .. stdout .. span_end,
+        text          = color3 .. stdout .. span_end,
         position      = 'top_right',
-        timeout       = 50, hover_timeout = 0.5, bg = beautiful.widget_bg,
+        timeout       = 50, hover_timeout = 0.5, bg = beautiful.widget_bg2
       }
       end)
 end
