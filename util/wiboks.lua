@@ -296,20 +296,6 @@ awful.screen.connect_for_each_screen(function(s)
             {
               {
                 {
-                  pkg_upd_icons,
-                  layout = wibox.container.margin(pkg_upd_count,9,15,2,2),
-                },
-                bg = beautiful.base03,
-                set_shape = function(cr, width, height)
-                  gears.shape.rounded_bar(cr, width, height, (height / 2) * (-1))
-                end,
-                widget = wibox.container.background
-              },
-              layout = wibox.container.margin(widget,0,-23,0,0),
-            },
-            {
-              {
-                {
                   pkg_upd_count,
                   layout = wibox.container.margin(pkg_upd_count,5,19,2,2),
                 },
@@ -504,13 +490,13 @@ awful.screen.connect_for_each_screen(function(s)
                     temp_gpu,
                     layout = wibox.container.margin(temp_gpu,10,6,0,3),
                  },
-                 layout  = wibox.layout.align.horizontal,
+                 layout  = wibox.layout.fixed.horizontal,
               },
                 layout  = wibox.layout.align.vertical,
             {
               { --
                 cpu_txt,
-                layout = wibox.container.margin(cpu_txt,3,0,2,6),
+                layout = wibox.container.margin(cpu_txt,4,0,2,6),
               },
                {
                  -- Проц графики
@@ -585,11 +571,11 @@ awful.screen.connect_for_each_screen(function(s)
                 {
                   {-- сеть загр
                     net_vicious1,
-                    layout = wibox.container.margin(fstext_r,7,0,2,0),
+                    layout = wibox.container.margin(net_vicious1,7,0,2,0),
                   },
                   { -- сеть отдача
                     net_vicious2,
-                    layout  = wibox.container.margin(fs_stat_graph_r_read,155,0,2,0),
+                    layout  = wibox.container.margin(net_vicious2,149,0,2,0),
                   },
                     layout = wibox.layout.stack,
                 },
@@ -597,11 +583,11 @@ awful.screen.connect_for_each_screen(function(s)
                 {
                   { -- Сеть граф загр
                     net_raph_d,
-                    layout = wibox.container.margin(net_raph_d,5,0,4,5),
+                    layout = wibox.container.margin(net_raph_d,8,0,4,5),
                   },
                   { -- Сеть граф отдача
                     net_raph_u,
-                    layout = wibox.container.margin(net_raph_u,5,0,4,5),
+                    layout = wibox.container.margin(net_raph_u,8,0,4,5),
                   },
                   layout  = wibox.layout.fixed.horizontal,
                 },
@@ -628,11 +614,11 @@ awful.screen.connect_for_each_screen(function(s)
                   },
                   { -- / I/O R
                     fs_stat_graph_r_read,
-                    layout  = wibox.container.margin(fs_stat_graph_r_read,173,66,5,0),
+                    layout  = wibox.container.margin(fs_stat_graph_r_read,153,76,5,0),
                   },
                   { -- / I/O W
                     fs_stat_graph_r_write,
-                    layout = wibox.container.margin(fs_stat_graph_r_write,235,6,5,0),
+                    layout = wibox.container.margin(fs_stat_graph_r_write,227,6,5,0),
                   },
                   layout = wibox.layout.stack,
                 },
@@ -650,11 +636,11 @@ awful.screen.connect_for_each_screen(function(s)
               },
               { -- /home I/O R
                 fs_stat_graph_h_read,
-                layout = wibox.container.margin(fs_stat_graph_h_read,173,66,5,0),
+                layout = wibox.container.margin(fs_stat_graph_h_read,153,76,5,0),
               },
               { -- /home I/O W
                 fs_stat_graph_h_write,
-                layout = wibox.container.margin(fs_stat_graph_h_write,235,6,5,0),
+                layout = wibox.container.margin(fs_stat_graph_h_write,227,6,5,0),
               },
               layout = wibox.layout.stack,
             },
@@ -678,7 +664,7 @@ awful.screen.connect_for_each_screen(function(s)
           {
             { -- Список процессов
                 process_htop,
-                layout = wibox.container.margin(process_htop,15,0,5,0),
+                layout = wibox.container.margin(process_htop,30,0,5,-3),
             },
               set_shape = function(cr, width, height)
                     gears.shape.rounded_rect(cr, width, height)
@@ -704,9 +690,9 @@ awful.screen.connect_for_each_screen(function(s)
                 },
                 { -- Баланс
                   balans_widget,
-                  layout = wibox.container.margin(uptime,12,0,3,3),
+                  layout = wibox.container.margin(uptime,12,5,3,3),
                 },
-                layout  = wibox.layout.fixed.horizontal,
+                layout  = wibox.layout.align.horizontal,
               },
               set_shape = function(cr, width, height)
                     gears.shape.rounded_rect(cr, width, height)

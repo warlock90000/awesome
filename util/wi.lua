@@ -25,6 +25,7 @@ local font1      = "<span font=\"Terminus Re33 Bold 13\">"
 local font2      = "<span font=\"Terminus Re33 Bold 10\">"
 local font3      = "<span font=\"Terminus Re33 Bold 11\">"
 local font4      = "<span font=\"Terminus Re33 Bold 12\">"
+local font_pacman = "<span font=\"PacFont Bold 11\">"
 local span_end   = "</span>"
 
 function math_round( roundIn , roundDig ) -- первый аргумент - число которое надо округлить, второй аргумент - количество символов после запятой.
@@ -82,6 +83,18 @@ lain.widget.calendar({
 --========= Textclock =========--
 --========= Weather =========--ConkyWeather bold 11
 icon_widget = wibox.widget.imagebox()
+function show_weather_current()
+        local conn_stat   = [[zsh -c 'curl -H "Accept-Language: ru" wttr.in/"Нижний Тагил?T?0?Q" | head -n5']]
+        awful.spawn.easy_async(conn_stat, function(stdout)
+          naughty.notify {
+            text          = color3 .. stdout .. span_end,
+            position      = 'top_right',
+            timeout       = 5,
+            bg            = "#202020"
+          }
+          end)
+    end
+icon_widget:connect_signal("mouse::enter", function () show_weather_current() end)
 --local path_to_icons = "/usr/share/icons/Arc/status/symbolic/"
 local path_to_icons = "/usr/share/icons/Papirus-Dark/symbolic/status/"
 local icon_map = {
@@ -159,13 +172,13 @@ fstext_r = wibox.widget {
 
 fsbar_r  = wibox.widget {
     forced_height    = 15,
-    forced_width     = 298,
+    forced_width     = 290,
     set_max_value    = 100,
     background_color = beautiful.widget_bg,
     color            = ({
                           type  = "linear",
                           from  = { 0, 0 },
-                          to    = { 298, 0 },
+                          to    = { 290, 0 },
                           stops = {
                             { 0, beautiful.fg_widget },
                             { 0.75, beautiful.fg_center_widget },
@@ -188,13 +201,13 @@ fstext_h = wibox.widget {
 
 fsbar_h = wibox.widget {
     forced_height    = 15,
-    forced_width     = 298,
+    forced_width     = 290,
     set_max_value    = 100,
     background_color = beautiful.widget_bg,
     color            = ({
                           type  = "linear",
                           from  = { 0, 0 },
-                          to    = { 298, 0 },
+                          to    = { 290, 0 },
                           stops = {
                             { 0, beautiful.fg_widget },
                             { 0.75, beautiful.fg_center_widget },
@@ -383,7 +396,7 @@ gpu = lain.widget.temp({
 })
 
 cpu_txt = wibox.widget{
-      markup = color3 .. "  CPU1     CPU2     CPU3     CPU4" .. span_end,
+      markup = color3 .. "  CPU1      CPU2       CPU3      CPU4" .. span_end,
       widget = wibox.widget.textbox,
       font   = "Terminus Re33 Bold 11",
 }
@@ -518,7 +531,7 @@ mem_txt = wibox.widget {
 
 mem_graph = wibox.widget {
             forced_height    = 15,
-            forced_width     = 298,
+            forced_width     = 290,
             background_color = beautiful.widget_bg,
             margins          = 1,
             paddings         = 1,
@@ -533,7 +546,7 @@ vicious.register(mem_graph, vicious.widgets.mem,
           mem_graph.color = {
                                 type  = "linear",
                                 from  = { 0, 0 },
-                                to    = { 298, 0 },
+                                to    = { 290, 0 },
                                 stops = {
                                   { 0, beautiful.fg_widget },
                                   { 0.75, beautiful.fg_center_widget },
@@ -617,10 +630,16 @@ local function display()
 end
 display()
 
-pkg_upd_icons = wibox.widget.textbox()
-
-pkg_upd_icons.markup = markup.font("PacFont Bold 11", markup(beautiful.widget_font_color, "C--- "))
-pkg_upd_icons:connect_signal('mouse::enter', function ()
+pkg_upd_count = awful.widget.watch('zsh -c "~/.config/awesome/util/script/pacm.sh pack_count"', 600,
+  function(widget, stdout)
+      if tonumber(stdout) > 0 then
+        widget.markup = font_pacman..markup(beautiful.widget_font_color, "C--- ")..span_end..font1..markup(beautiful.red, stdout)..span_end
+      else
+        widget.markup = font_pacman..markup(beautiful.widget_font_color, "C--- ")..span_end..font1..markup(beautiful.widget_font_color, "OK")..span_end
+      end
+    return
+  end)
+pkg_upd_count:connect_signal('mouse::enter', function ()
       usage         = naughty.notify({
       text          = string.format('<span font_desc="%s">%s</span>', "Terminus Re33 Bold 13", display()),
       timeout       = 10,
@@ -629,21 +648,10 @@ pkg_upd_icons:connect_signal('mouse::enter', function ()
       screen        = capi.mouse.screen
     })
   end)
-
-pkg_upd_icons:buttons(awful.util.table.join(
+pkg_upd_count:buttons(awful.util.table.join(
     awful.button({ }, 1, function () awful.spawn.with_shell('uxterm -geometry 90x10 -T Updating -e bash -c "sudo yaourt -Sy && pauseme"') end),
     awful.button({ }, 3, function () awful.spawn.with_shell('urxvt -T Updating -e bash -c "sudo yaourt -Sua && pauseme"') end)
 ))
-
-pkg_upd_count = awful.widget.watch('zsh -c "~/.config/awesome/util/script/pacm.sh pack_count"', 600,
-  function(widget, stdout)
-      if tonumber(stdout) > 0 then
-        widget.markup = markup.font("Terminus Re33 Bold 13", markup(beautiful.red, stdout))
-      else
-        widget.markup = markup.font("Terminus Re33 Bold 13", markup(beautiful.widget_font_color, "OK"))
-      end
-    return
-  end)
 --========= PKG =========--
 --========= Net =========--
 vicious.cache(vicious.widgets.net)
@@ -659,7 +667,7 @@ vicious.register(wibox.widget, vicious.widgets.net,
 
 net_raph_d = wibox.widget {
             forced_height     = 25,
-            forced_width      = 140,
+            forced_width      = 135,
             scale             = true,
             step_width        = 2,
             step_spacing      = 0,
@@ -683,7 +691,7 @@ net_raph_d = wibox.widget {
 
 net_raph_u = wibox.widget {
             forced_height    = 25,
-            forced_width     = 140,
+            forced_width     = 135,
             scale            = true,
             step_width       = 2,
             step_spacing     = 1,

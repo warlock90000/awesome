@@ -103,7 +103,7 @@ local function factory(args)
             text          = color3 .. stdout .. span_end,
             position      = 'top_right',
             timeout       = 20,
-            bg            = "#535355FF"
+            bg            = "#202020"
           }
           end)
     end
@@ -114,7 +114,7 @@ local function factory(args)
             text          = color3 .. stdout .. span_end,
             position      = 'top_right',
             timeout       = 20,
-            bg            = "#535355FF"
+            bg            = "#202020dF"
           }
           end)
     end
