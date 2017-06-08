@@ -34,6 +34,7 @@ function math_round( roundIn , roundDig ) -- первый аргумент - ч�
 end
 
 -- {{{ Keyboard layout widget
+--[[
 kbdcfg = {}
 kbdcfg.image        = wibox.widget.imagebox()
 kbdcfg.layout       = { "us", "ru" }
@@ -48,6 +49,37 @@ dbus.connect_signal("ru.gentoo.kbdd", function(...)
     kbdcfg.image.image = kbdcfg.images[kbdcfg.current]
     end
 )
+]]--
+kbdcfg = {}
+
+kbdcfg.cmd          = "setxkbmap"
+kbdcfg.layout      = { "us", "ru" }
+kbdcfg.layout_names = { "English", "Russian" }
+kbdcfg.current      = 1
+kbdcfg.image        = wibox.widget.imagebox()
+kbdcfg.text         = wibox.widget.textbox()
+kbdcfg.images       = { awful.util.getdir("config") .. "/themes/multicolor/icons/lang/icon_lang_en.png",
+                        awful.util.getdir("config") .. "/themes/multicolor/icons/lang/icon_lang_ru.png" }
+
+kbdcfg.switch = function()
+  kbdcfg.current = kbdcfg.current % #(kbdcfg.layout) + 1
+  local t = " " .. kbdcfg.layout[kbdcfg.current]
+  kbdcfg.text:set_text(kbdcfg.layout_names[kbdcfg.current])
+  os.execute(kbdcfg.cmd .. t)
+  kbdcfg.image:set_image(kbdcfg.images[kbdcfg.current])
+end
+
+for i = 1, #(kbdcfg.layout) do
+  kbdcfg.switch()
+end
+
+layoutButtons = awful.util.table.join(awful.button({ }, 1, kbdcfg.switch))
+kbdcfg.image:buttons(layoutButtons)
+kbdcfg.text:buttons(layoutButtons)
+
+--keyboardInfoWidget = wibox.layout.fixed.horizontal()
+--keyboardInfoWidget:add(kbdcfg.image)
+--keyboardInfoWidget:add(kbdcfg.text)
 -- }}}
 --========= base =========--
 sys    = wibox.widget.textbox()

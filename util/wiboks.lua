@@ -44,14 +44,20 @@ lspace3.forced_height = 18
 lspace4.forced_height = 2
 lspace5.forced_height = 5
 
-local tag_menu = {
-    { "Add tag",            function() lain.util.add_tag()     end },
-    { "Ren tag",            function() lain.util.rename_tag()  end },
-    { "Tag left",           function() lain.util.move_tag(1)   end },
-    { "Tag right",          function() lain.util.move_tag(-1)  end },
-    { "Del tag",            function() lain.util.delete_tag()  end },
-    { "Mv client->new tag", function() lain.util.move_to_new_tag()       end }
-}
+local tag_menu = radical.context {
+        width = 170,
+        layout = radical.layout.vertical,
+        border_width = 2,
+        border_color = "#88aa00",
+        item_layout = radical.layout.centerred
+    }
+tag_menu:add_item{text="Add tag", button1 = function() lain.util.add_tag(); tag_menu.visible = false end}
+tag_menu:add_item{text="Ren tag", button1 = function() lain.util.rename_tag(); tag_menu.visible = false end}
+tag_menu:add_item{text="Tag left", button1 = function() lain.util.move_tag(1); tag_menu.visible = false end}
+tag_menu:add_item{text="Tag right", button1 = function() lain.util.move_tag(-1); tag_menu.visible = false end}
+tag_menu:add_item{text="Del tag", button1 = function() lain.util.delete_tag(); tag_menu.visible = false end}
+tag_menu:add_item{text="Mv client->new tag", button1 = function() lain.util.move_to_new_tag(); tag_menu.visible = false end}
+tag_menu:add_item{text="Cancel", button1 = function() tag_menu.visible = false end}
 
 local l_m = wibox.widget.imagebox()
 local l_menu = radical.context {
@@ -101,7 +107,7 @@ taglist_buttons = awful.util.table.join(
                                           end),
                                           ]]--
                     --awful.button({ }, 3, awful.tag.viewtoggle),
-                    awful.button({ }, 3, function(t) lain.util.menu_clients_current_tags(tag_menu) end),
+                    awful.button({ }, 3, function(t) tag_menu.visible = true end),
                     awful.button({ modkey }, 3, function(t)
                                               if client.focus then
                                                   client.focus:toggle_tag(t)
@@ -282,7 +288,7 @@ awful.screen.connect_for_each_screen(function(s)
               {
                 {
                   wibox.widget.systray(),
-                  layout = wibox.container.margin(wibox.widget.systray(),15,15,2,2),
+                  layout = wibox.container.margin(wibox.widget.systray(),9,20,2,2),
                 },
                 bg = beautiful.base02,
                 set_shape = function(cr, width, height)
@@ -291,7 +297,7 @@ awful.screen.connect_for_each_screen(function(s)
                 end,
                 widget = wibox.container.background
               },
-              layout = wibox.container.margin(widget,0,-13,0,0),
+              layout = wibox.container.margin(widget,0,-14,0,0),
             },
             {
               {
@@ -750,6 +756,23 @@ awful.screen.connect_for_each_screen(function(s)
           s.dock_wibox_timer:stop()
     end)
     ------------------------------
+    --[[
+    local dockshape_1 = function(cr, width, height)
+      gears.shape.rounded_bar(cr, width, width)
+    end
 
+    s.dockheight_2 = (51 *  s.workarea.height)/100
+
+    s.dock_wibox_2 = wibox({ screen = s, x=1000, y=s.workarea.height/2 - s.dockheight/2, width = 300, height = s.dockheight, fg = beautiful.menu_fg_normal, bg = beautiful.widget_bg1, ontop = true, visible = true, type = "dock" })
+    gears.surface.apply_shape_bounding(s.dock_wibox_2, dockshape_1)
+
+    if s.index > 1 and s.dock_wibox_2.y == 0 then
+        s.dock_wibox_2.y = screen[1].dock_wibox_2.y
+    end
+    s.dock_wibox_2:setup {
+        layout = wibox.layout.fixed.vertical,
+        analogclock,
+    }
+    ]]--
 end)
 -- }}}

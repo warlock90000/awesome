@@ -40,7 +40,7 @@ function WallpaperSlide:nextWallpaper()
       self.handle[self.align](self.wp_list[self.wp_index], s)
     end
 
-    self.notifier({text = self.wp_list[self.wp_index]})
+    --self.notifier({text = self.wp_list[self.wp_index]})
     os.execute(table.concat({
       "gsettings",
       "set",
