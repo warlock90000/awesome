@@ -290,7 +290,7 @@ awful.screen.connect_for_each_screen(function(s)
                   wibox.widget.systray(),
                   layout = wibox.container.margin(wibox.widget.systray(),9,20,2,2),
                 },
-                bg = beautiful.base03,
+                bg = beautiful.base02,
                 set_shape = function(cr, width, height)
                   gears.shape.rounded_bar(cr, width, height, (height / 2) * (-1))
                   --gears.shape.powerline(cr, width, height, (height / 2) * (-1))
@@ -303,7 +303,7 @@ awful.screen.connect_for_each_screen(function(s)
               {
                 {
                   udisks.widget,
-                  layout = wibox.container.margin(udisks.widget,7,17,2,2),
+                  layout = wibox.container.margin(udisks.widget,7,14,2,2),
                 },
                 bg = beautiful.base02,
                 set_shape = function(cr, width, height)

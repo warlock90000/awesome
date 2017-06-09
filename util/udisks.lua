@@ -3,7 +3,6 @@ local lgi       = require 'lgi'
 local Gio       = lgi.require 'Gio'
 local GLib      = lgi.require 'GLib'
 local wibox     = require("wibox")
-local beautiful = require("beautiful")
 local awful     = require("awful")
 local naughty   = require("naughty")
 local match 	= require("math")
@@ -138,7 +137,6 @@ local function parse_block_devices(conn, res, callback)
 				if device and device['org.freedesktop.UDisks2.Filesystem'] and device['org.freedesktop.UDisks2.Partition'] then
 					local mounted = device['org.freedesktop.UDisks2.Filesystem']['MountPoints'][1]
 					local drive = value[device['org.freedesktop.UDisks2.Block']['Drive']]['org.freedesktop.UDisks2.Drive'];
-					--local size = value[device['org.freedesktop.UDisks2.Block']['Size']]['org.freedesktop.UDisks2.Drive'];
 					if mounted == nil then
 						mounted = false
 					else
@@ -199,7 +197,7 @@ local usb_menu = radical.context {
 		        item_layout = radical.layout.centerred
 		    }
 
-local naughty       = require("naughty")
+
 local function scan_finished(devices)
 	devices_layout:reset();
 	for device, data in pairs(devices) do
@@ -212,19 +210,17 @@ local function scan_finished(devices)
 			end
 
 			deviceicon = wibox.widget.textbox();
-			--deviceicon.markup = icon_name.." "..data.Size..tostring(data.Mounted)..data.Name..data.Label..data.UUID..data.FS;
+
 			usb_menu:clear()
 			usb_menu:add_item{text="Название:   "..data.Name,tooltip="Нажми ЛКМ для монтирования, ПКМ - для размонтирования", button1 = function() mount_device(data); usb_menu.visible = false end, button3 = function() unmount_device(data); usb_menu.visible = false end}
 			usb_menu:add_item{text="Метка:      "..data.Label, button1 = function() usb_menu.visible = false end}
 			usb_menu:add_item{text="UUID:       "..data.UUID, button1 = function() usb_menu.visible = false end}
 			usb_menu:add_item{text="Тип ФС:     "..data.FS, button1 = function() usb_menu.visible = false end}
 			usb_menu:add_item{text="Точка монт: "..tostring(data.Mounted), button1 = function() usb_menu.visible = false end}
-			usb_menu:add_item{text="Размер:     "..data.Size.."Gb", button1 = function() usb_menu.visible = false end}
+			usb_menu:add_item{text="Размер:     "..data.Size.."Mb", button1 = function() usb_menu.visible = false end}
 
 			deviceicon.markup = icon_name
 			deviceicon:buttons(awful.util.table.join(
-				--awful.button({ }, 1, function () mount_device(data); end),
-				--awful.button({ }, 3, function () unmount_device(data); end),
 				awful.button({ }, 1, function () usb_menu.visible = true; end)
 			))
 
@@ -251,4 +247,3 @@ rescan_devices(scan_finished);
 
 module.widget = devices_layout;
 return module
--- 
