@@ -302,7 +302,7 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, "Control"   }, "a", lain.util.move_to_new_tag(),
           {description = "add a tag with the focused client", group = "tag"}),
 
-    awful.key({ "Control"  }, "Shift_L", function () kbdcfg.switch() end),
+    --- awful.key({ "Control"  }, "Shift_L", function () kbdcfg.switch() end),
     -- Take a screenshot
     -- https://github.com/copycat-killer/dots/blob/master/bin/screenshot
     awful.key({ altkey }, "p", function() os.execute("screenshot") end),
