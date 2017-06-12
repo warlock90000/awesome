@@ -175,8 +175,7 @@ awful.screen.connect_for_each_screen(function(s)
             {
               {
                 {
-                  --mylauncher,
-                  a,
+                  START_btn,
                   layout = wibox.container.margin(mylauncher,15,15,0,0),
                 },
                 bg = beautiful.base02,

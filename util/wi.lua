@@ -42,13 +42,15 @@ kbdcfg.current      = 1
 kbdcfg.images       = { awful.util.getdir("config") .. "/themes/multicolor/icons/lang/icon_lang_en.png",
                         awful.util.getdir("config") .. "/themes/multicolor/icons/lang/icon_lang_ru.png" }
 kbdcfg.image.image = awful.util.getdir("config") .. "/themes/multicolor/icons/lang/icon_lang_en.png"
-dbus.request_name("session", "ru.gentoo.kbdd")
-dbus.add_match("session", "interface='ru.gentoo.kbdd',member='layoutChanged'")
-dbus.connect_signal("ru.gentoo.kbdd", function(...)
+kbdcfg.switch = function(...)
     kbdcfg.current = kbdcfg.current % #(kbdcfg.layout) + 1
     kbdcfg.image.image = kbdcfg.images[kbdcfg.current]
     end
-)
+dbus.request_name("session", "ru.gentoo.kbdd")
+dbus.add_match("session", "interface='ru.gentoo.kbdd',member='layoutChanged'")
+dbus.connect_signal("ru.gentoo.kbdd", kbdcfg.switch)
+layoutButtons = awful.util.table.join(awful.button({ }, 1, kbdcfg.switch))
+kbdcfg.image:buttons(layoutButtons)
 --[[
 kbdcfg = {}
 kbdcfg.cmd          = "setxkbmap"
@@ -125,6 +127,28 @@ function show_weather_current()
     end
 icon_widget:connect_signal("mouse::enter", function () show_weather_current() end)
 --local path_to_icons = "/usr/share/icons/Arc/status/symbolic/"
+local path_to_icons = "/home/jacka/.icons/nouveKDEGray/128x128/status/"
+local icon_map = {
+    ["01d"] = "weather-clear.png",
+    ["02d"] = "weather-few-clouds.png",
+    ["03d"] = "weather-clouds.png",
+    ["04d"] = "weather-many-clouds.png",
+    ["09d"] = "weather-showers-scattered-day.png",
+    ["10d"] = "weather-showers-day.png",
+    ["11d"] = "weather-storm-day.png",
+    ["13d"] = "weather-snow-scattered-day.png",
+    ["50d"] = "weather-mist.png",
+    ["01n"] = "weather-clear-night.png",
+    ["02n"] = "weather-few-clouds-night.png",
+    ["03n"] = "weather-clouds-night.png",
+    ["04n"] = "weather-many-clouds.png",
+    ["09n"] = "weather-showers-scattered-night.png",
+    ["10n"] = "weather-showers-night.png",
+    ["11n"] = "weather-storm-night.png",
+    ["13n"] = "weather-snow-scattered-night.png",
+    ["50n"] = "weather-mist.png"
+}
+--[[
 local path_to_icons = "/usr/share/icons/Papirus-Dark/symbolic/status/"
 local icon_map = {
     ["01d"] = "weather-clear-symbolic.svg",
@@ -146,6 +170,7 @@ local icon_map = {
     ["13n"] = "weather-snow-symbolic.svg",
     ["50n"] = "weather-fog-symbolic.svg"
 }
+]]--
 --[[
 local path_to_icons = "/usr/share/icons/oxygen/base/128x128/status/"
 local icon_map = {
@@ -938,5 +963,7 @@ ext_ip = awful.widget.watch('wget -O - -q icanhazip.com', 600,
     return
   end)
 --========= Ext. IP =========--
+--========= USB mount =========--
 udisks = require("util.udisks")
-udisks.filemanager = "dolphin"
+--udisks.filemanager = "dolphin"
+--========= USB mount =========--

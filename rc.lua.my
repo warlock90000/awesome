@@ -10,10 +10,7 @@ local freedesktop   = require("freedesktop")
 local hotkeys_popup = require("awful.hotkeys_popup").widget
 local tyrannical    = require("tyrannical")
 local vicious       = require("vicious")
---local xdg_menu      = require("archmenu") -- (yaourt -S archlinux-xdg-menu)
---local vicious_contrib = require("vicious.contrib")
 local radical       = require("radical")
---local blingbling    = require("blingbling")
 -- }}}
 
 -- {{{ Error handling
@@ -107,6 +104,7 @@ lain.layout.termfair.center.ncol    = 1
 -- }}}
 local script = awful.util.get_configuration_dir() .. "/util/script/"
 
+-- {{{ Menu
 --== radical ==--
 local exit_dialog = radical.box
   {
@@ -162,7 +160,6 @@ local bar_menu = radical.context {
 bar_menu.margins.left = 12
 bar_menu:add_item {
     text     = beautiful.apps_title or "Apps",
-    --icon     = beautiful.launcher_icon,
     bg_used  = beautiful.bar_bg_buttons or beautiful.menu_bg_normal,
     --spacing  = 4,
     icon = "/home/jacka/.icons/nouveKDEGray/256x256/categories/gnome-applications.png",
@@ -183,98 +180,58 @@ bar_menu:add_item {
         return app_menu
     end
 }
-bar_menu:add_item{text="Wine",icon = "/home/jacka/.icons/nouveKDEGray/256x256/apps/gnome-gnibbles.png", sub_menu = function()
+local apps      = "/home/jacka/.icons/nouveKDEGray/256x256/apps/"
+local devices   = "/home/jacka/.icons/nouveKDEGray/256x256/devices/"
+local mimetypes = "/home/jacka/.icons/nouveKDEGray/256x256/mimetypes/"
+local actions   = "/home/jacka/.icons/nouveKDEGray/256x256/actions/"
+local emblems   = "/home/jacka/.icons/nouveKDEGray/256x256/emblems/"
+local places    = "/home/jacka/.icons/nouveKDEGray/256x256/places/"
+
+bar_menu:add_item{text="Wine",icon = apps.."gnome-gnibbles.png", sub_menu = function()
   local smenu = radical.context{}
-    smenu:add_item{text="TC_Aion",icon = "/home/jacka/.icons/nouveKDEGray/256x256/apps/gnome-gnibbles.png", button1 = function() awful.util.spawn(script .. "tc_aion") end}
-    smenu:add_item{text="TC",icon = "/home/jacka/.icons/nouveKDEGray/256x256/apps/gnome-gnibbles.png", button1 = function() awful.util.spawn(script .. "tc") end}
-    smenu:add_item{text="Photoshop CS6 x32",icon = "/home/jacka/.icons/nouveKDEGray/256x256/apps/calligrakrita.png", button1 = function() awful.util.spawn(script .. "p_shop") end}
-    smenu:add_item{text="Aion",icon = "/home/jacka/.icons/nouveKDEGray/256x256/apps/gnome-gnibbles.png", button1 = function() awful.util.spawn(script .. "aion") end}
-    smenu:add_item{text="Tera",icon = "/home/jacka/.icons/nouveKDEGray/256x256/apps/gnome-gnibbles.png", button1 = function() awful.util.spawn(script .. "tera") end}
-    smenu:add_item{text="Tera1",icon = "/home/jacka/.icons/nouveKDEGray/256x256/apps/gnome-gnibbles.png", button1 = function() awful.util.spawn(script .. "tera1") end}
-    smenu:add_item{text="Rift",icon = "/home/jacka/.icons/nouveKDEGray/256x256/apps/gnome-gnibbles.png", button1 = function() awful.util.spawn(script .. "rift") end}
-    smenu:add_item{text="Cancel", icon = "/home/jacka/.icons/nouveKDEGray/256x256/emblems/emblem-noread.png", button1 = function() smenu.visible = false end}
+    smenu:add_item{text="TC_Aion",icon = apps.."gnome-gnibbles.png", button1 = function() awful.util.spawn(script .. "tc_aion"); smenu.visible = false end}
+    smenu:add_item{text="TC",icon = apps.."gnome-gnibbles.png", button1 = function() awful.util.spawn(script .. "tc"); smenu.visible = false end}
+    smenu:add_item{text="Photoshop CS6 x32",icon = apps.."calligrakrita.png", button1 = function() awful.util.spawn(script .. "p_shop"); smenu.visible = false end}
+    smenu:add_item{text="Aion",icon = apps.."gnome-gnibbles.png", button1 = function() awful.util.spawn(script .. "aion"); smenu.visible = false end}
+    smenu:add_item{text="Tera",icon = apps.."gnome-gnibbles.png", button1 = function() awful.util.spawn(script .. "tera"); smenu.visible = false end}
+    smenu:add_item{text="Tera1",icon = apps.."gnome-gnibbles.png", button1 = function() awful.util.spawn(script .. "tera1"); smenu.visible = false end}
+    smenu:add_item{text="Rift",icon = apps.."gnome-gnibbles.png", button1 = function() awful.util.spawn(script .. "rift"); smenu.visible = false end}
+    smenu:add_item{text="Cancel", icon = emblems.."emblem-noread.png", button1 = function() smenu.visible = false end}
     return smenu
   end}
-bar_menu:add_item{text="ACE Stream",icon = "/home/jacka/.icons/nouveKDEGray/256x256/devices/computer.png", sub_menu = function()
+bar_menu:add_item{text="ACE Stream",icon = devices.."computer.png", sub_menu = function()
   local smenu = radical.context{}
-    smenu:add_item{text="детские", icon = "/home/jacka/.icons/nouveKDEGray/256x256/mimetypes/video-x-matroska.png", button1 = function() awful.util.spawn("acestreamplayer http://super-pomoyka.us.to/trash/ttv-list/ttv.child.player.m3u") end}
-    smenu:add_item{text="общие", icon = "/home/jacka/.icons/nouveKDEGray/256x256/mimetypes/video-x-matroska.png",button1 = function() awful.util.spawn("acestreamplayer http://super-pomoyka.us.to/trash/ttv-list/ttv.common.player.m3u") end}
-    smenu:add_item{text="познавательные", icon = "/home/jacka/.icons/nouveKDEGray/256x256/mimetypes/video-x-matroska.png",button1 = function() awful.util.spawn("acestreamplayer http://super-pomoyka.us.to/trash/ttv-list/ttv.discover.player.m3u") end}
-    smenu:add_item{text="развлекательные", icon = "/home/jacka/.icons/nouveKDEGray/256x256/mimetypes/video-x-matroska.png",button1 = function() awful.util.spawn("acestreamplayer http://super-pomoyka.us.to/trash/ttv-list/ttv.ent.player.m3u") end}
-    smenu:add_item{text="фильмы", icon = "/home/jacka/.icons/nouveKDEGray/256x256/mimetypes/video-x-matroska.png",button1 = function() awful.util.spawn("acestreamplayer http://super-pomoyka.us.to/trash/ttv-list/ttv.film.player.m3u") end}
-    smenu:add_item{text="музыкальные", icon = "/home/jacka/.icons/nouveKDEGray/256x256/mimetypes/video-x-matroska.png",button1 = function() awful.util.spawn("acestreamplayer http://super-pomoyka.us.to/trash/ttv-list/ttv.music.player.m3u") end}
-    smenu:add_item{text="новости", icon = "/home/jacka/.icons/nouveKDEGray/256x256/mimetypes/video-x-matroska.png",button1 = function() awful.util.spawn("acestreamplayer http://super-pomoyka.us.to/trash/ttv-list/ttv.news.player.m3u") end}
-    smenu:add_item{text="HD", icon = "/home/jacka/.icons/nouveKDEGray/256x256/mimetypes/video-x-matroska.png",button1 = function() awful.util.spawn("acestreamplayer http://super-pomoyka.us.to/trash/ttv-list/ttv.HD.player.m3u") end}
-    smenu:add_item{text="Cancel", icon = "/home/jacka/.icons/nouveKDEGray/256x256/emblems/emblem-noread.png", button1 = function() smenu.visible = false end}
+    smenu:add_item{text="детские", icon = mimetypes.."video-x-matroska.png", button1 = function() awful.util.spawn("acestreamplayer http://super-pomoyka.us.to/trash/ttv-list/ttv.child.player.m3u"); smenu.visible = false end}
+    smenu:add_item{text="общие", icon = mimetypes.."video-x-matroska.png",button1 = function() awful.util.spawn("acestreamplayer http://super-pomoyka.us.to/trash/ttv-list/ttv.common.player.m3u"); smenu.visible = false end}
+    smenu:add_item{text="познавательные", icon = mimetypes.."video-x-matroska.png",button1 = function() awful.util.spawn("acestreamplayer http://super-pomoyka.us.to/trash/ttv-list/ttv.discover.player.m3u"); smenu.visible = false end}
+    smenu:add_item{text="развлекательные", icon = mimetypes.."video-x-matroska.png",button1 = function() awful.util.spawn("acestreamplayer http://super-pomoyka.us.to/trash/ttv-list/ttv.ent.player.m3u"); smenu.visible = false end}
+    smenu:add_item{text="фильмы", icon = mimetypes.."video-x-matroska.png",button1 = function() awful.util.spawn("acestreamplayer http://super-pomoyka.us.to/trash/ttv-list/ttv.film.player.m3u"); smenu.visible = false end}
+    smenu:add_item{text="музыкальные", icon = mimetypes.."video-x-matroska.png",button1 = function() awful.util.spawn("acestreamplayer http://super-pomoyka.us.to/trash/ttv-list/ttv.music.player.m3u"); smenu.visible = false end}
+    smenu:add_item{text="новости", icon = mimetypes.."video-x-matroska.png",button1 = function() awful.util.spawn("acestreamplayer http://super-pomoyka.us.to/trash/ttv-list/ttv.news.player.m3u"); smenu.visible = false end}
+    smenu:add_item{text="HD", icon = mimetypes.."video-x-matroska.png",button1 = function() awful.util.spawn("acestreamplayer http://super-pomoyka.us.to/trash/ttv-list/ttv.HD.player.m3u"); smenu.visible = false end}
+    smenu:add_item{text="Cancel", icon = emblems.."emblem-noread.png", button1 = function() smenu.visible = false end}
 
     return smenu
   end}
-bar_menu:add_item {text="Exit",icon = "/home/jacka/.icons/nouveKDEGray/256x256/actions/system-shutdown.png", sub_menu = function()
+bar_menu:add_item {text="Exit",icon = actions.."system-shutdown.png", sub_menu = function()
   local smenu = radical.context{}
-    smenu:add_item{text="Shutdown", icon = "/home/jacka/.icons/nouveKDEGray/256x256/actions/system-shutdown.png", button1 = function() awful.util.spawn("systemctl poweroff") end}
-    smenu:add_item{text="Reboot", icon = "/home/jacka/.icons/nouveKDEGray/256x256/actions/system-reboot.png", button1 = function() awful.util.spawn("systemctl reboot") end}
-    smenu:add_item{text="Suspend", icon = "/home/jacka/.icons/nouveKDEGray/256x256/actions/system-suspend.png", button1 = function() awful.util.spawn("systemctl suspend") end}
-    smenu:add_item{text="Sleep", icon = "/home/jacka/.icons/nouveKDEGray/256x256/actions/system-suspend-hibernate.png", button1 = function() awful.util.spawn("systemctl hybrid-sleep") end}
-    smenu:add_item{text="Cancel", icon = "/home/jacka/.icons/nouveKDEGray/256x256/emblems/emblem-noread.png", button1 = function() smenu.visible = false end}
+    smenu:add_item{text="Shutdown", icon = actions.."system-shutdown.png", button1 = function() awful.util.spawn("systemctl poweroff"); smenu.visible = false end}
+    smenu:add_item{text="Reboot", icon = actions.."system-reboot.png", button1 = function() awful.util.spawn("systemctl reboot"); smenu.visible = false end}
+    smenu:add_item{text="Suspend", icon = actions.."system-suspend.png", button1 = function() awful.util.spawn("systemctl suspend"); smenu.visible = false end}
+    smenu:add_item{text="Sleep", icon = actions.."system-suspend-hibernate.png", button1 = function() awful.util.spawn("systemctl hybrid-sleep"); smenu.visible = false end}
+    smenu:add_item{text="Cancel", icon = emblems.."emblem-noread.png", button1 = function() smenu.visible = false end}
     return smenu
   end}
-bar_menu:add_item{text="Cancel",icon = "/home/jacka/.icons/nouveKDEGray/256x256/emblems/emblem-noread.png", button1 = function() bar_menu.visible = false end}
+bar_menu:add_item{text="Cancel",icon = emblems.."emblem-noread.png", button1 = function() bar_menu.visible = false end}
 
-a = wibox.widget.imagebox()
-a:set_image(beautiful.launcher_icon)
-a:set_menu(bar_menu)
+START_btn = wibox.widget.imagebox()
+START_btn.image = places.."archlinux-logo.png"
+START_btn.menu = bar_menu
 
+-- }}}
 --== radical ==--
 local tags = require("util.tags")
 local wi = require("util.wi")
-
--- {{{ Menu
---[[
-local myawesomemenu = {
-    { "hotkeys", function() return false, hotkeys_popup.show_help end },
-    { "manual", terminal .. " -e man awesome" },
-    { "edit config", string.format("%s -e %s %s", terminal, editor, awesome.conffile) }
-}
-local myexit = {
-    { " Exit", function() awful.util.spawn(script .. "exit")     end },
-    { " Logout",   function() awesome.quit()                              end },
-    { "test", function () exit_dialog.visible = true end},
-    { "test1", function () exit_menu.visible = true end},
-    { "Restart Awesome", awesome.restart }
-}
-local wine = {
-    { "TC_Aion", function() awful.util.spawn(script .. "tc_aion")  end },
-    { "TC",   function() awful.util.spawn(script .. "tc") end },
-    { "Photoshop CS6 x32",  function() awful.util.spawn(script .. "p_shop") end },
-    { "Aion",    function() awful.util.spawn(script .. "aion") end },
-    { "Tera",    function() awful.util.spawn(script .. "tera") end },
-    { "Rift",    function() awful.util.spawn(script .. "rift") end },
-}
-
-local mymainmenu = freedesktop.menu.build({
-    before = {
-        { "Wine", wine, beautiful.awesome_icon },
-        { "Awesome", myawesomemenu, beautiful.launcher_icon },
-    },
-    after = {
-        -- { "Open terminal", terminal },
-        { "Exit", myexit, beautiful.launcher_icon },
-    }
-})
-]]--
---[[
-local mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu},
-                                          { "Applications", xdgmenu },
-                                          { "Wine", wine },
-                                          { "Exit", myexit }
-                                        }
-                              })
-]]--
---mylauncher = awful.widget.launcher({ image = beautiful.launcher_icon, menu = mymainmenu })
-
--- }}}
-
-
 local wiboks = require("util.wiboks")
 
 -- {{{ Mouse bindings
