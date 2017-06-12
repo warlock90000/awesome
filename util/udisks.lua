@@ -31,7 +31,7 @@ local function open_filemanger(device)
 	if module.filemanager == nil then
 		naughty.notify({ preset = naughty.config.presets.critical,
                      title = "Опаньки, ошибка!",
-                     text = "Не определена udisks.filemanager" })
+                     text = "Не определена udisks.filemanager \nТочка монтирования "..device.Mounted })
 	else
 		awful.spawn.with_shell(module.filemanager .. ' "' .. device.Mounted .. '"');
 	end
