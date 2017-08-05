@@ -1,9 +1,9 @@
 
 --[[
-                                                  
-     Licensed under GNU General Public License v2 
-      * (c) 2013, Luke Bonham                     
-                                                  
+
+     Licensed under GNU General Public License v2
+      * (c) 2013, Luke Bonham
+
 --]]
 
 local helpers      = require("lain.helpers")
@@ -19,7 +19,8 @@ local temp = {}
 local function factory(args)
     local args     = args or {}
     local timeout  = args.timeout or 2
-    local tempfile = args.tempfile or "/sys/class/thermal/thermal_zone0/temp"
+    --local tempfile = args.tempfile or "/sys/class/thermal/thermal_zone0/temp"
+    local tempfile = args.tempfile
     local settings = args.settings or function() end
 
     temp.widget = wibox.widget.textbox()

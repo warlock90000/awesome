@@ -17,7 +17,8 @@ tyrannical.tags = {
         init        = true,                   -- Load the tag on startup
         exclusive   = true,                   -- Refuse any other type of clients (by classes)
         screen      = 1,                  -- Create this tag on screen 1 and screen 2
-        layout      = awful.layout.suit.tile, -- Use the tile layout
+        --layout      = awful.layout.suit.tile, -- Use the tile layout
+        layout      = awful.layout.suit.floating,
         class       = {"konsole", "terminator", "qterminal", "urxvt", "URxvt"}
     },
     --[[
@@ -71,6 +72,14 @@ tyrannical.tags = {
         screen      = 1,
         layout      = awful.layout.suit.floating,
         class = {"lximage-qt", "XnViewMP", "Okular", "xpdf", "Xpdf", "Hotshots", "Photoshop.exe"}
+    },
+    {
+        name        = "",
+        init        = false,
+        exclusive   = true,
+        screen      = 1,
+        layout      = awful.layout.suit.floating,
+        class = {"GlyphClientApp.exe", "rift.exe"}
     },
     --- Screen 2
     {

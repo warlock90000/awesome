@@ -98,7 +98,32 @@ local function unmount_device(device)
 	end
 end
 
-
+local function unmount_device(device)
+	if device.Mounted then
+		ret, err = system_bus:call(
+			'org.freedesktop.UDisks2',
+			'/org/freedesktop/UDisks2/block_devices/' .. device.Device,
+			'org.freedesktop.UDisks2.Filesystem',
+			'Unmount',
+			GLib.Variant.new_tuple({
+				GLib.Variant('a{sv}', {})
+			}, 1),
+			nil,
+			Gio.DBusConnectionFlags.NONE,
+			-1,
+			nil,
+			function(conn, res)
+				local ret, err = system_bus:call_finish(res);
+				if err then
+					naughty.notify({
+						preset = naughty.config.presets.critical,
+						text = tostring(err),
+					});
+				end
+			end
+		);
+	end
+end
 local function parse_block_devices(conn, res, callback)
 	local ret, err = system_bus:call_finish(res);
 	local xml = ret.value[1];

@@ -42,9 +42,9 @@ function WallpaperSlide:nextWallpaper()
 
     --self.notifier({text = self.wp_list[self.wp_index]})
     os.execute(table.concat({
-      "gsettings",
+      --"gsettings",
       "set",
-      "org.cinnamon.desktop.background",
+      --"org.cinnamon.desktop.background",
       "picture-uri",
       "'file://" ..
       self.wp_list[self.wp_index],

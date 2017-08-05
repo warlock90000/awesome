@@ -5,6 +5,7 @@ local wibox         = require("wibox")
 local beautiful     = require("beautiful")
 local lain          = require("lain")
 local radical       = require("radical")
+local vicious       = require("vicious")
 
 --[[ -- Radical tag
 local rad_taglist  = require( "radical.impl.taglist"       )
@@ -164,6 +165,21 @@ awful.screen.connect_for_each_screen(function(s)
     s.mytasklist = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, tasklist_buttons, { bg_focus = "#393f3f" })
     --s.mytasklist = awful.widget.tasklist(s, awful.widget.tasklist.filter.focused, tasklist_buttons, { align = "center" }, { bg_focus = "#00000000" })
     --========= Create a tasklist widget =========--
+    local delim = {
+                    {
+                      {
+                       widget = wibox.widget.textbox,
+                       layout = wibox.container.margin(widget,8,8,0,0),
+                      },
+                       bg = beautiful.base00,
+                       set_shape = function(cr, width, height)
+                       gears.shape.powerline(cr, width, height, (height / 2) * (-1))
+                       --gears.shape.powerline(cr, width, height, (height / 2) * (-1))
+                      end,
+                     widget = wibox.container.background
+                    },
+                    layout = wibox.container.margin(widget,0,-10,0,0),
+                  }
     --========= Create the wibox =========--
     s.mywibox = awful.wibar({ position = "top", screen = s, height = 20 })
 
@@ -316,7 +332,7 @@ awful.screen.connect_for_each_screen(function(s)
               {
                 {
                   pkg_upd_count,
-                  layout = wibox.container.margin(pkg_upd_count,5,19,2,2),
+                  layout = wibox.container.margin(pkg_upd_count,5,19,0,2),
                 },
                 bg = beautiful.base03,
                 set_shape = function(cr, width, height)
@@ -421,7 +437,8 @@ awful.screen.connect_for_each_screen(function(s)
             s.mylayoutbox,
         },
     }
-
+        ------local clock = require("util.clock")
+        ------clock.new({ screen = s })
        --------------------------- Create the vertical wibox
     s.dockheight = (51 *  s.workarea.height)/100
 
@@ -463,7 +480,7 @@ awful.screen.connect_for_each_screen(function(s)
               {
                 { -- Память текст
                   mem_txt,
-                  layout = wibox.container.margin(mem_txt,4,4,3,3),
+                  layout = wibox.container.margin(mem_txt,10,4,3,3),
                 },
                 { -- Память график
                   mem_graph,
@@ -487,7 +504,7 @@ awful.screen.connect_for_each_screen(function(s)
               { -- Проц
                  { -- Говернер и частота
                      cpu,
-                     layout = wibox.container.margin(cpu.widget,4,0,2,2),
+                     layout = wibox.container.margin(cpu.widget,1,0,2,2),
                  },
                  { -- %
                      cpufreq_vicious,
@@ -496,24 +513,13 @@ awful.screen.connect_for_each_screen(function(s)
                  layout  = wibox.layout.stack,
               },
                 layout  = wibox.layout.align.vertical,
-              { -- Проц
-                 { -- темп проца
-                    temp_cpu.widget,
-                    layout = wibox.container.margin(temp_cpu.widget,9,0,0,3),
-                 },
-                 { -- темп матирнки
-                    temp_mb,
-                    layout = wibox.container.margin(temp_mb,15,0,0,3),
-                 },
-                 { -- темп видео
-                    temp_gpu,
-                    layout = wibox.container.margin(temp_gpu,10,6,0,3),
-                 },
-                 layout  = wibox.layout.fixed.horizontal,
+              { -- Проц, мать, видео - датчики
+                    cpu_all,
+                    layout = wibox.container.margin(test,11,0,0,3),
               },
                 layout  = wibox.layout.align.vertical,
             {
-              { --
+              { -- Проц нагрузки
                 cpu_txt,
                 layout = wibox.container.margin(cpu_txt,4,0,2,6),
               },
@@ -523,50 +529,19 @@ awful.screen.connect_for_each_screen(function(s)
                     cpugraph0,
                     layout = wibox.container.margin(cpugraph0,7,0,0,5),
                   },
-                  {
-                    {
-                      cpupct0,
-                      widget = wibox.container.margin(cpupct0,5,0,0,0)
-                    },
-                      layout = wibox.container.rotate(widget, 'east'),
-                  },
-                    layout  = wibox.layout.fixed.horizontal,
                   { -- цпу2 граф
                     cpugraph1,
                     layout = wibox.container.margin(cpugraph1,7,0,0,5),
                   },
-                  {
-                    {
-                      cpupct1,
-                      widget = wibox.container.margin(cpupct1,5,0,0,0)
-                    },
-                      layout = wibox.container.rotate(widget, 'east'),
-                  },
-                    layout  = wibox.layout.fixed.horizontal,
                   { -- цпу3 граф
                     cpugraph2,
                     layout = wibox.container.margin(cpugraph2,7,0,0,5),
                   },
-                  {
-                    {
-                      cpupct2,
-                      widget = wibox.container.margin(cpupct2,5,0,0,0)
-                    },
-                      layout = wibox.container.rotate(widget, 'east'),
-                  },
-                    layout  = wibox.layout.fixed.horizontal,
                   { -- цпу4 граф
                     cpugraph3,
-                    layout = wibox.container.margin(cpugraph3,7,0,0,5),
+                    layout = wibox.container.margin(cpugraph3,7,7,0,5),
                   },
-                  {
-                    {
-                      cpupct3,
-                      widget = wibox.container.margin(cpupct3,5,0,0,0)
-                    },
-                      layout = wibox.container.rotate(widget, 'east'),
-                  },
-                    layout  = wibox.layout.fixed.horizontal,
+                    layout  = wibox.layout.flex.horizontal,
                },
                   layout  = wibox.layout.stack,
             },
@@ -683,7 +658,7 @@ awful.screen.connect_for_each_screen(function(s)
           {
             { -- Список процессов
                 process_htop,
-                layout = wibox.container.margin(process_htop,30,0,5,-3),
+                layout = wibox.container.margin(process_htop,16,0,5,-3),
             },
               set_shape = function(cr, width, height)
                     gears.shape.rounded_rect(cr, width, height)
@@ -701,15 +676,15 @@ awful.screen.connect_for_each_screen(function(s)
               {
                 {
                   net_icon,
-                  layout = wibox.container.margin(sys,7,0,3,3),
+                  layout = wibox.container.margin(net_icon,7,0,3,3),
                 },
                 {
                   ext_ip,
-                  layout = wibox.container.margin(sys,2,0,3,3),
+                  layout = wibox.container.margin(ext_ip,2,0,3,3),
                 },
                 { -- Баланс
                   balans_widget,
-                  layout = wibox.container.margin(uptime,12,5,3,3),
+                  layout = wibox.container.margin(balans_widget,12,5,3,3),
                 },
                 layout  = wibox.layout.align.horizontal,
               },
@@ -727,8 +702,8 @@ awful.screen.connect_for_each_screen(function(s)
     }
 
     -- Add toggling functionalities
-    s.docktimer = gears.timer{ timeout = 3 }
-    s.dock_wibox_timer = gears.timer{ timeout = 3 }
+    s.docktimer = gears.timer{ timeout = 13 }
+    s.dock_wibox_timer = gears.timer{ timeout = 6 }
 
     s.docktimer:connect_signal("timeout", function()
         s = awful.screen.focused()
@@ -752,10 +727,13 @@ awful.screen.connect_for_each_screen(function(s)
 ]]--
     s.dock_wibox:connect_signal("mouse::leave", function()
         s = awful.screen.focused()
+        s.dock_wibox_timer:start()
         s.dock_wibox.width = 1
+        vicious.suspend()
     end)
 
     s.dock_wibox:connect_signal("mouse::enter", function()
+        vicious.activate()
         s = awful.screen.focused()
         s.dock_wibox.width = 300
         s.dock_wibox.y = s.workarea.height/2 - s.dockheight/2

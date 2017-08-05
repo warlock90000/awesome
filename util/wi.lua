@@ -21,10 +21,14 @@ local color8     = "<span color=\"#B87912\">"
 local color9     = "<span color=\"#C7C7C7\">"
 local color10     = "<span color=\"#969696\">"
 
-local font1      = "<span font=\"Terminus Re33 Bold 13\">"
-local font2      = "<span font=\"Terminus Re33 Bold 10\">"
-local font3      = "<span font=\"Terminus Re33 Bold 11\">"
-local font4      = "<span font=\"Terminus Re33 Bold 12\">"
+local font       = "<span font=\"Terminus Re33 Nerd Bold  "
+local Size10     = "10\">"
+local Size11     = "11\">"
+local Size12     = "12\">"
+local Size13     = "13\">"
+local TermB11    = "Terminus Re33 Nerd Bold 11"
+local TermB13    = "Terminus Re33 Nerd Bold 13"
+local TermB14    = "Terminus Re33 Nerd Bold 14"
 local font_pacman = "<span font=\"PacFont Bold 11\">"
 local span_end   = "</span>"
 
@@ -32,9 +36,22 @@ function math_round( roundIn , roundDig ) -- первый аргумент - ч�
      local mul = math.pow( 10, roundDig )
      return ( math.floor( ( roundIn * mul ) + 0.5 )/mul )
 end
+function string:split( inSplitPattern, outResults )
 
--- {{{ Keyboard layout widget
-
+   if not outResults then
+      outResults = {}
+   end
+   local theStart = 1
+   local theSplitStart, theSplitEnd = string.find( self, inSplitPattern, theStart )
+   while theSplitStart do
+      table.insert( outResults, string.sub( self, theStart, theSplitStart-1 ) )
+      theStart = theSplitEnd + 1
+      theSplitStart, theSplitEnd = string.find( self, inSplitPattern, theStart )
+   end
+   table.insert( outResults, string.sub( self, theStart ) )
+   return outResults
+end
+--========= Keyboard layout widget =========--
 kbdcfg = {}
 kbdcfg.image        = wibox.widget.imagebox()
 kbdcfg.layout       = { "us", "ru" }
@@ -51,35 +68,7 @@ dbus.add_match("session", "interface='ru.gentoo.kbdd',member='layoutChanged'")
 dbus.connect_signal("ru.gentoo.kbdd", kbdcfg.switch)
 layoutButtons = awful.util.table.join(awful.button({ }, 1, kbdcfg.switch))
 kbdcfg.image:buttons(layoutButtons)
---[[
-kbdcfg = {}
-kbdcfg.cmd          = "setxkbmap"
-kbdcfg.layout      = { "us", "ru" }
-kbdcfg.layout_names = { "English", "Russian" }
-kbdcfg.current      = 1
-kbdcfg.image        = wibox.widget.imagebox()
-kbdcfg.text         = wibox.widget.textbox()
-kbdcfg.images       = { awful.util.getdir("config") .. "/themes/multicolor/icons/lang/icon_lang_en.png",
-                        awful.util.getdir("config") .. "/themes/multicolor/icons/lang/icon_lang_ru.png" }
-kbdcfg.switch = function()
-  kbdcfg.current = kbdcfg.current % #(kbdcfg.layout) + 1
-  local t = " " .. kbdcfg.layout[kbdcfg.current]
-  kbdcfg.text:set_text(kbdcfg.layout_names[kbdcfg.current])
-  os.execute(kbdcfg.cmd .. t)
-  kbdcfg.image:set_image(kbdcfg.images[kbdcfg.current])
-end
-for i = 1, #(kbdcfg.layout) do
-  kbdcfg.switch()
-end
-layoutButtons = awful.util.table.join(awful.button({ }, 1, kbdcfg.switch))
-kbdcfg.image:buttons(layoutButtons)
-kbdcfg.text:buttons(layoutButtons)
-
---keyboardInfoWidget = wibox.layout.fixed.horizontal()
---keyboardInfoWidget:add(kbdcfg.image)
---keyboardInfoWidget:add(kbdcfg.text)
-]]--
--- }}}
+--========= Keyboard layout widget =========--
 --========= base =========--
 sys    = wibox.widget.textbox()
 vicious.register(sys, vicious.widgets.os, color3.."$1"..span_end..color9.." $2"..span_end, 600)
@@ -90,14 +79,14 @@ vicious.register(uptime, vicious.widgets.uptime,
     end, 61)
 --========= base =========--
 --========= Textclock =========--
-mytextclock = wibox.widget.textclock(markup.font("Terminus Re33 Bold 18", markup(beautiful.clock_font_color, " %H:%M ")))
-myclock_t   = awful.tooltip({
+mytextclock = wibox.widget.textclock(markup.font("Terminus Re33 Nerd Bold 18", markup(beautiful.clock_font_color, " %H:%M ")))
+local myclock_t   = awful.tooltip({
          objects          = { mytextclock },
          delay_show       = 0,
          margin_leftright = 15,
          margin_topbottom = 14,
          timer_function   = function()
-            return os.date(markup.font("Terminus Re33 Bold 18", markup(beautiful.clock_font_color, "%A %d %B %Y")))
+            return os.date(markup.font("Terminus Re33 Nerd Bold 18", markup(beautiful.clock_font_color, "%A %d %B %Y")))
           end,
 })
 myclock_t.shape = function(cr, width, height)
@@ -107,7 +96,7 @@ end
 lain.widget.calendar({
     attach_to = { mytextclock },
     notification_preset = {
-        font = "Terminus Re33 Bold 13",
+        font = TermB13,
         bg   = beautiful.widget_bg
 }})
   --========= Calendar =========--
@@ -196,84 +185,52 @@ local icon_map = {
 myweather = lain.widget.weather({
     city_id = 520494,
     weather_na_markup = markup(beautiful.widget_font_color, "N/A "),
-    notification_preset = { font = "Terminus Re33 Bold 13", bg = beautiful.widget_bg },
+    notification_preset = { font = TermB13, bg = beautiful.widget_bg },
     settings = function()
-        descr = weather_now["weather"][1]["description"]:lower()
-        units = math.floor(weather_now["main"]["temp"])
-        icons = weather_now["weather"][1]["icon"]
+        local descr = weather_now["weather"][1]["description"]:lower()
+        local units = math.floor(weather_now["main"]["temp"])
+        local icons = weather_now["weather"][1]["icon"]
         --widget:set_markup(markup.font("Hack 9", markup(beautiful.widget_font_color, " " .. descr .. " | " .. units .. "°C ")))
         icon_widget.image = path_to_icons .. icon_map[icons]
-        widget.markup = markup.font("Terminus Re33 Bold 13", markup(beautiful.widget_font_color, color9..units.."°C "..span_end))
+        widget.markup = markup.font(TermB13, markup(beautiful.widget_font_color, color9..units.."°C "..span_end))
     end
 })
 --========= Weather =========--
 --========= fs =========--
 vicious.cache(vicious.widgets.dio)
 vicious.cache(vicious.widgets.fs)
---[[
-hdd_temp = awful.widget.watch("hddtemp /dev/sdb | awk '{print $3}'", 60,
-  function(widget, stdout)
-    widget:set_markup(markup.font("Terminus Re33 Bold 11", markup("#00B52A", stdout)))
-    return
-  end)
-]]--
-fstext_r = wibox.widget {
-    color            = beautiful.fg_normal,
-    background_color = beautiful.bg_normal,
-    font             = "Terminus Re33 Bold 11",
-    widget           = wibox.widget.textbox,
-}
+local fstext_desc = {
+                color            = beautiful.fg_normal,
+                background_color = beautiful.bg_normal,
+                font             = TermB11,
+                widget           = wibox.widget.textbox,
+              }
+local fsbar_desc = {
+              forced_height    = 15,
+              forced_width     = 290,
+              set_max_value    = 100,
+              background_color = beautiful.widget_bg,
+              color            = ({
+                                    type  = "linear",
+                                    from  = { 0, 0 },
+                                    to    = { 290, 0 },
+                                    stops = {
+                                      { 0, beautiful.fg_widget },
+                                      { 0.75, beautiful.fg_center_widget },
+                                      { 1, beautiful.fg_end_widget }
+                                            }
+                                 }),
+              margins          = 3,
+              paddings         = 1,
+              ticks            = true,
+              ticks_size       = 6,
+              widget           = wibox.widget.progressbar,
+            }
 
-fsbar_r  = wibox.widget {
-    forced_height    = 15,
-    forced_width     = 290,
-    set_max_value    = 100,
-    background_color = beautiful.widget_bg,
-    color            = ({
-                          type  = "linear",
-                          from  = { 0, 0 },
-                          to    = { 290, 0 },
-                          stops = {
-                            { 0, beautiful.fg_widget },
-                            { 0.75, beautiful.fg_center_widget },
-                            { 1, beautiful.fg_end_widget }
-                                  }
-                       }),
-    margins          = 3,
-    paddings         = 1,
-    ticks            = true,
-    ticks_size       = 6,
-    widget           = wibox.widget.progressbar,
-}
-
-fstext_h = wibox.widget {
-    color            = beautiful.fg_normal,
-    background_color = beautiful.bg_normal,
-    font             = "Terminus Re33 Bold 11",
-    widget           = wibox.widget.textbox,
-}
-
-fsbar_h = wibox.widget {
-    forced_height    = 15,
-    forced_width     = 290,
-    set_max_value    = 100,
-    background_color = beautiful.widget_bg,
-    color            = ({
-                          type  = "linear",
-                          from  = { 0, 0 },
-                          to    = { 290, 0 },
-                          stops = {
-                            { 0, beautiful.fg_widget },
-                            { 0.75, beautiful.fg_center_widget },
-                            { 1, beautiful.fg_end_widget }
-                                  }
-                       }),
-    margins          = 3,
-    paddings         = 1,
-    ticks            = true,
-    ticks_size       = 6,
-    widget           = wibox.widget.progressbar,
-}
+fstext_r = wibox.widget(fstext_desc)
+fsbar_r  = wibox.widget(fsbar_desc)
+fstext_h = wibox.widget(fstext_desc)
+fsbar_h = wibox.widget(fsbar_desc)
 
 --[[
 fs_r = lain.widget.fs({
@@ -309,99 +266,33 @@ vicious.register(fstext_r, vicious.widgets.fs,
               fsbar_h:set_value(tonumber(args["{/home used_gb}"]))
             end, 60)
 ]]--
-
-fs_stat_graph_r_read = wibox.widget {
-            forced_height    = 25,
-            forced_width     = 57,
-            step_width       = 2,
-            step_spacing     = 1,
-            scale             = true,
-            step_shape       = function(cr, width, height)
-                gears.shape.rounded_rect(cr, width, height, 2)
-            end,
-            border_color     = beautiful.widget_bg,
-            background_color = beautiful.widget_bg,
-            color            = ({
-                                  type  = "linear",
-                                  from  = { 0, 25 },
-                                  to    = { 0, 0 },
-                                  stops = {
-                                    { 0, beautiful.fg_widget },
-                                    { 0.75, beautiful.fg_center_widget },
-                                    { 1, beautiful.fg_end_widget }
-                                  }
-                                }),
-            widget           = wibox.widget.graph,
-}
-fs_stat_graph_r_write = wibox.widget {
-            forced_height    = 25,
-            forced_width     = 57,
-            step_width       = 2,
-            step_spacing     = 1,
-            scale             = true,
-            step_shape       = function(cr, width, height)
-                gears.shape.rounded_rect(cr, width, height, 2)
-            end,
-            border_color     = beautiful.widget_bg,
-            background_color = beautiful.widget_bg,
-            color            = ({
-                                  type  = "linear",
-                                  from  = { 0, 25 },
-                                  to    = { 0, 0 },
-                                  stops = {
-                                    { 0, beautiful.fg_widget },
-                                    { 0.75, beautiful.fg_center_widget },
-                                    { 1, beautiful.fg_end_widget }
-                                  }
-                                }),
-            widget           = wibox.widget.graph,
-}
-fs_stat_graph_h_read = wibox.widget {
-            forced_height    = 25,
-            forced_width     = 57,
-            step_width       = 2,
-            step_spacing     = 1,
-            scale             = true,
-            step_shape       = function(cr, width, height)
-                gears.shape.rounded_rect(cr, width, height, 2)
-            end,
-            border_color     = beautiful.widget_bg,
-            background_color = beautiful.widget_bg,
-            color            = ({
-                                  type  = "linear",
-                                  from  = { 0, 25 },
-                                  to    = { 0, 0 },
-                                  stops = {
-                                    { 0, beautiful.fg_widget },
-                                    { 0.75, beautiful.fg_center_widget },
-                                    { 1, beautiful.fg_end_widget }
-                                  }
-                                }),
-            widget           = wibox.widget.graph,
-}
-fs_stat_graph_h_write = wibox.widget {
-            forced_height    = 25,
-            forced_width     = 57,
-            step_width       = 2,
-            step_spacing     = 1,
-            scale             = true,
-            step_shape       = function(cr, width, height)
-                gears.shape.rounded_rect(cr, width, height, 2)
-            end,
-            border_color     = beautiful.widget_bg,
-            background_color = beautiful.widget_bg,
-            color            = ({
-                                  type  = "linear",
-                                  from  = { 0, 25 },
-                                  to    = { 0, 0 },
-                                  stops = {
-                                    { 0, beautiful.fg_widget },
-                                    { 0.75, beautiful.fg_center_widget },
-                                    { 1, beautiful.fg_end_widget }
-                                  }
-                                }),
-            widget           = wibox.widget.graph,
-}
+local fs_stat_graph_desc = {
+                      forced_height    = 25,
+                      forced_width     = 57,
+                      step_width       = 2,
+                      step_spacing     = 1,
+                      scale             = true,
+                      step_shape       = function(cr, width, height)
+                          gears.shape.rounded_rect(cr, width, height, 2)
+                      end,
+                      border_color     = beautiful.widget_bg,
+                      background_color = beautiful.widget_bg,
+                      color            = ({
+                                            type  = "linear",
+                                            from  = { 0, 25 },
+                                            to    = { 0, 0 },
+                                            stops = {
+                                              { 0, beautiful.fg_widget },
+                                              { 0.75, beautiful.fg_center_widget },
+                                              { 1, beautiful.fg_end_widget }
+                                            }
+                                          }),
+                      widget           = wibox.widget.graph,
+                    }
+fs_stat_graph_r_read = wibox.widget(fs_stat_graph_desc)
+fs_stat_graph_r_write = wibox.widget(fs_stat_graph_desc)
+fs_stat_graph_h_read = wibox.widget(fs_stat_graph_desc)
+fs_stat_graph_h_write = wibox.widget(fs_stat_graph_desc)
 
 vicious.register(fs_stat_graph_r_read, vicious.widgets.dio,
             function (widget, args)
@@ -415,172 +306,93 @@ vicious.register(fs_stat_graph_r_read, vicious.widgets.dio,
 vicious.cache(vicious.widgets.cpu)
 vicious.cache(vicious.widgets.cpufreq)
 
+local t = {}
+local x = {}
+cpu_all = wibox.widget{
+      widget = wibox.widget.textbox,
+      font   = TermB11,
+}
+awful.widget.watch("zsh -c '~/.config/awesome/util/script/sysfs'", 6,
+  function(widget, stdout)
+
+    for line in stdout:gmatch("[^\r\n]+") do
+      local t = line:split(", ")
+        for i = 1,#t do
+          if     t[1] == "hwmon2.temp1_input" then x.t_cpu = color3..' '..span_end..color9..math.ceil(t[2] / 1000)..'°C '..span_end
+          elseif t[1] == "hwmon3.fan1_input"  then x.fan_cpu = color3..' '..span_end..color9..math.ceil(t[2])..'rpm '..span_end
+          elseif t[1] == "hwmon0.temp1_input" then x.t_mb = color3..' '..span_end..color9..math.ceil(t[2] / 1000)..'°C '..span_end
+          elseif t[1] == "hwmon1.temp1_input"  then x.t_gpu = color3..'GPU '..span_end..color9..math.ceil(t[2] / 1000)..'°C'..span_end
+          end
+        end
+    end
+    cpu_all.markup = x.t_cpu..x.fan_cpu..x.t_mb..x.t_gpu
+    return
+  end)
+
+cpu = wibox.widget{
+      widget = wibox.widget.textbox,
+      font   = TermB11,
+}
+local cpugraph_desc = {
+                  forced_height    = 25,
+                  forced_width     = 50,
+                  max_value        = 100,
+                  step_width       = 2,
+                  step_spacing     = 1,
+                  step_shape       = function(cr, width, height)
+                      gears.shape.rounded_rect(cr, width, height, 2)
+                  end,
+                  border_color     = beautiful.widget_bg,
+                  background_color = beautiful.widget_bg,
+                  color            = ({
+                                        type  = "linear",
+                                        from  = { 0, 25 },
+                                        to    = { 0, 0 },
+                                        stops = {
+                                          { 0, beautiful.fg_widget },
+                                          { 0.55, beautiful.fg_center_widget },
+                                          { 1, beautiful.fg_end_widget }
+                                        }
+                                      }),
+                  widget           = wibox.widget.graph,
+                }
+
+cpugraph0 = wibox.widget (cpugraph_desc)
+cpugraph1 = wibox.widget (cpugraph_desc)
+cpugraph2 = wibox.widget (cpugraph_desc)
+cpugraph3 = wibox.widget (cpugraph_desc)
+
+cpu_txt = wibox.widget{
+      widget = wibox.widget.textbox,
+      font   = TermB14,
+}
+
+vicious.register(cpu_txt, vicious.widgets.cpu,
+            function (widget, args)
+              cpu.markup = color3.."  "..span_end..args[1].."% "
+              cpugraph0:add_value(tonumber(args[2]))
+              cpugraph1:add_value(tonumber(args[3]))
+              cpugraph2:add_value(tonumber(args[4]))
+              cpugraph3:add_value(tonumber(args[5]))
+              cpu_txt.text = "  "..tostring(args[2]).."%      "..tostring(args[3]).."%     "..tostring(args[4]).."%     "..tostring(args[5]).."%"
+            end, 3)
+
 cpufreq_vicious = wibox.widget.textbox()
 vicious.register(cpufreq_vicious, vicious.widgets.cpufreq,
   function (widget,args)
     --cpufreq_vicious.text = args[5].." "..math.floor(args[1]).."Mhz"
     return string.format(color3.."%s "..span_end..color9.."%s"..span_end.." Mhz", args[5], math.floor(args[1]))
   end , 5, "cpu0")
-temp_mb = wibox.widget{
-      widget = wibox.widget.textbox,
-      font   = "Terminus Re33 Bold 11",
-}
-temp_gpu = wibox.widget{
-      widget = wibox.widget.textbox,
-      font   = "Terminus Re33 Bold 11",
-}
 
-temp_cpu = lain.widget.temp({
-    tempfile = "/sys/class/hwmon/hwmon2/temp1_input",
-    settings = function()
-        widget.markup = markup.font("Terminus Re33 Bold 11", color3.." ".."CPU "..span_end..color9..coretemp_now .. "°C"..span_end)
-    end
-})
-mb = lain.widget.temp({
-    tempfile = "/sys/class/hwmon/hwmon1/temp1_input",
-    settings = function()
-        temp_mb.markup = color3.."MB "..span_end..color9..coretemp_now .. "°C"..span_end
-    end
-})
-gpu = lain.widget.temp({
-    tempfile = "/sys/class/hwmon/hwmon0/temp1_input",
-    settings = function()
-        temp_gpu.markup = color3.."GPU "..span_end..color9..coretemp_now .. "°C"..span_end
-    end
-})
-
-cpu_txt = wibox.widget{
-      markup = color3 .. "  CPU1      CPU2       CPU3      CPU4" .. span_end,
-      widget = wibox.widget.textbox,
-      font   = "Terminus Re33 Bold 11",
-}
-cpu = wibox.widget{
-      widget = wibox.widget.textbox,
-      font   = "Terminus Re33 Bold 11",
-}
-
-cpupct0   = wibox.widget.textbox()
-cpugraph0 = wibox.widget {
-            forced_height    = 25,
-            forced_width     = 50,
-            max_value        = 100,
-            step_width       = 2,
-            step_spacing     = 1,
-            step_shape       = function(cr, width, height)
-                gears.shape.rounded_rect(cr, width, height, 2)
-            end,
-            border_color     = beautiful.widget_bg,
-            background_color = beautiful.widget_bg,
-            color            = ({
-                                  type  = "linear",
-                                  from  = { 0, 25 },
-                                  to    = { 0, 0 },
-                                  stops = {
-                                    { 0, beautiful.fg_widget },
-                                    { 0.55, beautiful.fg_center_widget },
-                                    { 1, beautiful.fg_end_widget }
-                                  }
-                                }),
-            widget           = wibox.widget.graph,
-}
-
-cpupct1   = wibox.widget.textbox()
-cpugraph1 = wibox.widget {
-            forced_height    = 25,
-            forced_width     = 50,
-            max_value        = 100,
-            step_width       = 2,
-            step_spacing     = 1,
-            step_shape       = function(cr, width, height)
-                gears.shape.rounded_rect(cr, width, height, 2)
-            end,
-            border_color     = beautiful.widget_bg,
-            background_color = beautiful.widget_bg,
-            color            = ({
-                                  type  = "linear",
-                                  from  = { 0, 25 },
-                                  to    = { 0, 0 },
-                                  stops = {
-                                    { 0, beautiful.fg_widget },
-                                    { 0.55, beautiful.fg_center_widget },
-                                    { 1, beautiful.fg_end_widget }
-                                          }
-                                }),
-            widget        = wibox.widget.graph,
-}
-
-cpupct2   = wibox.widget.textbox()
-cpugraph2 = wibox.widget {
-            forced_height    = 25,
-            forced_width     = 50,
-            max_value        = 100,
-            step_width       = 2,
-            step_spacing     = 1,
-            step_shape       = function(cr, width, height)
-                gears.shape.rounded_rect(cr, width, height, 2)
-            end,
-            border_color     = beautiful.widget_bg,
-            background_color = beautiful.widget_bg,
-            color            = ({
-                                  type  = "linear",
-                                  from  = { 0, 25 },
-                                  to    = { 0, 0 },
-                                  stops = {
-                                    { 0, beautiful.fg_widget },
-                                    { 0.55, beautiful.fg_center_widget },
-                                    { 1, beautiful.fg_end_widget }
-                                          }
-                                }),
-            widget           = wibox.widget.graph,
-}
-
-cpupct3   = wibox.widget.textbox()
-cpugraph3 = wibox.widget {
-            forced_height    = 25,
-            forced_width     = 50,
-            max_value        = 100,
-            step_width       = 2,
-            step_spacing     = 1,
-            step_shape       = function(cr, width, height)
-                gears.shape.rounded_rect(cr, width, height, 2)
-            end,
-            border_color     = beautiful.widget_bg,
-            background_color = beautiful.widget_bg,
-            color            = ({
-                                  type  = "linear",
-                                  from  = { 0, 25 },
-                                  to    = { 0, 0 },
-                                  stops = {
-                                    { 0, beautiful.fg_widget },
-                                    { 0.55, beautiful.fg_center_widget },
-                                    { 1, beautiful.fg_end_widget }
-                                          }
-                                }),
-            widget        = wibox.widget.graph,
-}
-
-vicious.register(cpupct3, vicious.widgets.cpu,
-            function (widget, args)
-              cpu.markup = color3.."  "..span_end..args[1].."% "
-              cpupct0.text = tostring(args[2]).."%"
-              cpugraph0:add_value(tonumber(args[2]))
-              cpupct1.text = tostring(args[3]).."%"
-              cpugraph1:add_value(tonumber(args[3]))
-              cpupct2.text = tostring(args[4]).."%"
-              cpugraph2:add_value(tonumber(args[4]))
-              cpupct3.text = tostring(args[5]).."%"
-              cpugraph3:add_value(tonumber(args[5]))
-            end, 3)
-
-process_htop = awful.widget.watch("bash -c '/bin/ps --sort -c,-s -eo fname,user,%cpu,%mem,pid | /usr/bin/head'", 7)
-  process_htop.font = "Terminus Re33 Bold 11"
+process_htop = awful.widget.watch("bash -c '/bin/ps --sort -c,-s -eo fname,user,%cpu,%mem,pid,nice | /usr/bin/head'", 7)
+  process_htop.font = TermB11
 --========= CPU =========
 --========= Mem =========--
 vicious.cache(vicious.widgets.mem)
 
 mem_txt = wibox.widget {
         widget = wibox.widget.textbox,
-        font = "Terminus Re33 Bold 11",
+        font = TermB11,
   }
 
 mem_graph = wibox.widget {
@@ -596,7 +408,7 @@ mem_graph = wibox.widget {
 
 vicious.register(mem_graph, vicious.widgets.mem,
   function (widget,args)
-      mem_txt.markup = color3.."  Use:"..span_end..color9..tostring(args[2]).."Mb"..span_end..color3.." Free:"..span_end..color9..tostring(args[4]).."Mb"..span_end..color3.." Tot:"..span_end..color9..tostring(args[3]).."Mb"..span_end
+      mem_txt.markup = color3.."MEM Use:"..span_end..color9..tostring(args[2]).."Mb"..span_end..color3.." Free:"..span_end..color9..tostring(args[4]).."Mb"..span_end..color3.." Tot:"..span_end..color9..tostring(args[3]).."Mb"..span_end
           mem_graph.color = {
                                 type  = "linear",
                                 from  = { 0, 0 },
@@ -612,14 +424,14 @@ vicious.register(mem_graph, vicious.widgets.mem,
 --========= Mem =========--
 --========= Audio =========--
 soundicon = wibox.widget{
-    font                = "Terminus Re33 Bold 13",
+    font                = TermB13,
     widget              = wibox.widget.textbox
 }
 -- Pulsebar
 volume = lain.widget.pulsebar({
     ticks               = true,
     ticks_size          = 6,
-    notification_preset = { font = "Terminus Re33 Bold 13" },
+    notification_preset = { font = TermB13 },
 
     settings = function()
       if (not volume_now.muted and volume_now.left == 0) or volume_now.muted == "no" then
@@ -637,8 +449,8 @@ volume = lain.widget.pulsebar({
 })
 volume.tooltip.wibox.fg   = beautiful.widget_bg
 volume.tooltip.wibox.font = beautiful.font
-volume.bar.width = 60
-volume.bar.height = 6
+--volume.bar.width = 60
+--volume.bar.height = 6
 
 volume.bar:buttons(awful.util.table.join(
     awful.button({}, 1, function() -- left click
@@ -687,15 +499,15 @@ display()
 pkg_upd_count = awful.widget.watch('zsh -c "~/.config/awesome/util/script/pacm.sh pack_count"', 600,
   function(widget, stdout)
       if tonumber(stdout) > 0 then
-        widget.markup = font_pacman..markup(beautiful.widget_font_color, "C--- ")..span_end..font1..markup(beautiful.red, stdout)..span_end
+        widget.markup = font_pacman..markup(beautiful.widget_font_color, "C--- ")..span_end..font..Size13..markup(beautiful.red, stdout)..span_end
       else
-        widget.markup = font_pacman..markup(beautiful.widget_font_color, "C--- ")..span_end..font1..markup(beautiful.widget_font_color, "OK")..span_end
+        widget.markup = font_pacman..markup(beautiful.widget_font_color, "C--- ")..span_end..font..Size13..markup(beautiful.widget_font_color, "OK")..span_end
       end
     return
   end)
 pkg_upd_count:connect_signal('mouse::enter', function ()
       usage         = naughty.notify({
-      text          = string.format('<span font_desc="%s">%s</span>', "Terminus Re33 Bold 13", display()),
+      text          = string.format('<span font_desc="%s">%s</span>', TermB13, display()),
       timeout       = 10,
       position      = "top_right",
       bg            = beautiful.widget_bg,
@@ -703,8 +515,8 @@ pkg_upd_count:connect_signal('mouse::enter', function ()
     })
   end)
 pkg_upd_count:buttons(awful.util.table.join(
-    awful.button({ }, 1, function () awful.spawn.with_shell('uxterm -geometry 90x10 -T Updating -e bash -c "sudo yaourt -Sy && pauseme"') end),
-    awful.button({ }, 3, function () awful.spawn.with_shell('urxvt -T Updating -e bash -c "sudo yaourt -Sua && pauseme"') end)
+    awful.button({ }, 1, function () awful.spawn.with_shell('urxvtc -geometry 90x10 -T Updating -e bash -c "sudo yaourt -Sy && pauseme"') end),
+    awful.button({ }, 3, function () awful.spawn.with_shell('urxvtc -T Updating -e bash -c "sudo yaourt -Sua && pauseme"') end)
 ))
 --========= PKG =========--
 --========= Net =========--
@@ -715,8 +527,8 @@ net_vicious2 = wibox.widget.textbox()
 
 vicious.register(wibox.widget, vicious.widgets.net,
             function (widget, args)
-              net_vicious1.markup = color3.."⬇ "..span_end..font2..tostring(args["{enp3s0 rx_mb}"]).."M ✦ "..tonumber(args["{enp3s0 down_kb}"]).."K"..span_end
-              net_vicious2.markup = color3.."⬆ "..span_end..font2..tostring(args["{enp3s0 tx_mb}"]).."M ✦ "..tostring(args["{enp3s0 up_kb}"]).."K"..span_end
+              net_vicious1.markup = color3.."⬇ "..span_end..font..Size10..tostring(args["{enp3s0 rx_mb}"]).."M ✦ "..tonumber(args["{enp3s0 down_kb}"]).."K"..span_end
+              net_vicious2.markup = color3.."⬆ "..span_end..font..Size10..tostring(args["{enp3s0 tx_mb}"]).."M ✦ "..tostring(args["{enp3s0 up_kb}"]).."K"..span_end
             end, 5)
 
 net_raph_d = wibox.widget {
@@ -859,9 +671,9 @@ net_vicious1:buttons(awful.util.table.join(
 net_icon = awful.widget.watch("zsh -c '~/.config/awesome/util/script/check_inet'", 60,
   function(widget, stdout)
     if tonumber(stdout) == 1 then
-      widget.markup = font2..color7..""..span_end..span_end
+      widget.markup = font..Size10..color7..""..span_end..span_end
     elseif tonumber(stdout) == 0 then
-      widget.markup = font2..color2..""..span_end..span_end
+      widget.markup = font..Size10..color2..""..span_end..span_end
       naughty.notify({ preset = naughty.config.presets.critical,
                          title = "Шо та таки не то!",
                          text = "Нет интернета!" })
@@ -886,10 +698,12 @@ function mpd_stop(s)
 end
 function mpd_prev(s)
   awful.spawn.with_shell("mpc prev || ncmpc prev || pms prev")
+  icon_control_prev.markup   = color7.." "..span_end
   mpdwidget.update()
 end
 function mpd_next(s)
   awful.spawn.with_shell("mpc next || ncmpc next || pms next")
+  icon_control_next.markup   = color7.." "..span_end
   mpdwidget.update()
 end
 function open_ncmpcpp(s)
@@ -918,7 +732,7 @@ mpdwidget = lain.widget.mpd({
             title  = mpd_now.title
             time   = string.format(" (%s/%s)", format_time(mpd_now.elapsed),format_time(mpd_now.time))
             pls    = string.format("[%s/%s] ", mpd_now.pls_pos,mpd_now.pls_len)
-            icon_control_toggle.markup = color5.." "..span_end
+            icon_control_toggle.markup = color7.." "..span_end
             icon_control_prev.markup   = color5.." "..span_end
             icon_control_next.markup   = color5.." "..span_end
             icon_control_stop.markup   = color5.." "..span_end
@@ -928,7 +742,7 @@ mpdwidget = lain.widget.mpd({
             title  = mpd_now.title
             time   = string.format(" (%s/%s)", format_time(mpd_now.elapsed),format_time(mpd_now.time))
             pls    = string.format("[%s/%s] ", mpd_now.pls_pos,mpd_now.pls_len)
-            icon_control_toggle.markup = color5.." "..span_end
+            icon_control_toggle.markup = color7.." "..span_end
         else
             artist = ""
             album  = ""
@@ -940,7 +754,7 @@ mpdwidget = lain.widget.mpd({
             icon_control_next.markup   = ""
             icon_control_stop.markup   = ""
         end
-        widget.markup = font3..color9..pls..span_end..span_end..font3..color2..artist..span_end..span_end..font3..color1..album..span_end..span_end..font3..color3..title..span_end..span_end..font3..color9..time..span_end..span_end
+        widget.markup = font..Size11..color9..pls..span_end..span_end..font..Size11..color2..artist..span_end..span_end..font..Size11..color1..album..span_end..span_end..font..Size11..color3..title..span_end..span_end..font..Size11..color9..time..span_end..span_end
     end
 })
 icon_control_toggle:connect_signal("button::press", function () mpd_toggle()   end)
@@ -952,18 +766,24 @@ mpdwidget.widget:connect_signal   ("button::press", function () open_ncmpcpp() e
 --========= Balans =========--
 balans_widget = awful.widget.watch("zsh -c '~/.config/awesome/util/script/balans'", 6000,
   function(widget, stdout)
-    widget.markup = markup.font("Terminus Re33 Bold 11", color3.."Баланс "..span_end..color9..stdout..span_end)
+    widget.markup = markup.font(TermB11, color3.."Баланс "..span_end..color9..stdout..span_end)
     return
   end)
 --========= Balans =========--
 --========= Ext. IP =========--
 ext_ip = awful.widget.watch('wget -O - -q icanhazip.com', 600,
   function(widget, stdout)
-    widget.markup = markup.font("Terminus Re33 Bold 11", color3.."IP:"..span_end..color9..stdout..span_end)
+    widget.markup = markup.font(TermB11, color3.."IP:"..span_end..color9..stdout..span_end)
     return
   end)
 --========= Ext. IP =========--
 --========= USB mount =========--
 udisks = require("util.udisks")
---udisks.filemanager = "dolphin"
+udisks.filemanager = "dolphin"
 --========= USB mount =========--
+
+
+--========= TEST =========--
+
+
+--========= TEST =========--

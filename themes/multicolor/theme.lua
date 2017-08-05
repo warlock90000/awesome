@@ -5,8 +5,9 @@ theme.confdir                                   = os.getenv("HOME") .. "/.config
 theme.wallpaper_dir                             = "/home/jacka/Pictures/art/-=COSPLAY=-/disharmonica.deviantart.com/1"
 theme.wallpaper                                 = theme.wallpaper_dir .. "/the_witcher___triss_merigold_cosplay_by_dzikan-dantbho.jpg"
 
-theme.font                                      = "Terminus Re33 Bold 12"
-theme.tooltip_font                              = "Terminus Re33 Bold 14"
+theme.font                                      = "Terminus Re33 Nerd Bold 12" -- "SonyEricssonLogo 11"
+theme.tooltip_font                              = "Terminus Re33 Nerd Bold 14"
+--theme.menu_default_item_style                   = "SonyEricssonLogo 11"
 
 theme.bg_normal                                 = "#000000"
 theme.bg_focus                                  = "#3d3d3eb5"

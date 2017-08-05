@@ -11,6 +11,7 @@ local hotkeys_popup = require("awful.hotkeys_popup").widget
 local tyrannical    = require("tyrannical")
 local vicious       = require("vicious")
 local radical       = require("radical")
+local autostart     = require("util.autostart")
 -- }}}
 
 -- {{{ Error handling
@@ -44,14 +45,16 @@ local function run_once(cmd)
 end
 
 -- {{{ Compositing
-awful.spawn.with_shell("compton &")
+--awful.spawn.with_shell("compton &")
+autostart("compton -b")
 -- }}}
 
-awful.spawn.with_shell("hsetroot -solid \"#000000\"")
-
+--awful.spawn.with_shell("hsetroot -solid \"#000000\"")
+autostart('hsetroot -solid \"#000000\"')
 ---run_once("urxvtd &")
-
---run_once("~/bin/start.sh &")
+autostart("kbdd")
+autostart("urxvtd -q -f -o")
+autostart("/usr/lib/polkit-kde/polkit-kde-authentication-agent-1")
 
 -- {{{ SlideShow
 wp_handle = require("util.wp_slideshow"):new("~/Pictures/art/222/", "fit", 60)
@@ -74,6 +77,7 @@ local browser    = "palemoon"
 local gui_editor = "subl"
 local graphics   = "xnview"
 local files      = "dolphin"
+local telegram      = "telegram-desktop"
 -- }}}
 awful.layout.layouts = {
   awful.layout.suit.floating,
@@ -146,7 +150,7 @@ local exit_menu = radical.context {
 
 local customMenu = require( "customMenu" )
 local app_menu = nil
-local bar_menu = radical.context {
+local main_menu = radical.context {
         style      = radical.style.arrow,
         arrow_type = 0,
         item_style = radical.item.style.classic ,
@@ -157,8 +161,8 @@ local bar_menu = radical.context {
         spacing  = 3,
         item_layout = radical.layout.centerred
     }
-bar_menu.margins.left = 12
-bar_menu:add_item {
+main_menu.margins.left = 12
+main_menu:add_item {
     text     = beautiful.apps_title or "Apps",
     bg_used  = beautiful.bar_bg_buttons or beautiful.menu_bg_normal,
     --spacing  = 4,
@@ -187,19 +191,21 @@ local actions   = "/home/jacka/.icons/nouveKDEGray/256x256/actions/"
 local emblems   = "/home/jacka/.icons/nouveKDEGray/256x256/emblems/"
 local places    = "/home/jacka/.icons/nouveKDEGray/256x256/places/"
 
-bar_menu:add_item{text="Wine",icon = apps.."gnome-gnibbles.png", sub_menu = function()
+main_menu:add_item{text="Wine",icon = apps.."gnome-gnibbles.png", sub_menu = function()
   local smenu = radical.context{}
     smenu:add_item{text="TC_Aion",icon = apps.."gnome-gnibbles.png", button1 = function() awful.util.spawn(script .. "tc_aion"); smenu.visible = false end}
     smenu:add_item{text="TC",icon = apps.."gnome-gnibbles.png", button1 = function() awful.util.spawn(script .. "tc"); smenu.visible = false end}
     smenu:add_item{text="Photoshop CS6 x32",icon = apps.."calligrakrita.png", button1 = function() awful.util.spawn(script .. "p_shop"); smenu.visible = false end}
     smenu:add_item{text="Aion",icon = apps.."gnome-gnibbles.png", button1 = function() awful.util.spawn(script .. "aion"); smenu.visible = false end}
-    smenu:add_item{text="Tera",icon = apps.."gnome-gnibbles.png", button1 = function() awful.util.spawn(script .. "tera"); smenu.visible = false end}
-    smenu:add_item{text="Tera1",icon = apps.."gnome-gnibbles.png", button1 = function() awful.util.spawn(script .. "tera1"); smenu.visible = false end}
-    smenu:add_item{text="Rift",icon = apps.."gnome-gnibbles.png", button1 = function() awful.util.spawn(script .. "rift"); smenu.visible = false end}
+    --smenu:add_item{text="Tera",icon = apps.."gnome-gnibbles.png", button1 = function() awful.util.spawn(script .. "tera"); smenu.visible = false end}
+    smenu:add_item{text="Tera x32",icon = apps.."gnome-gnibbles.png", button1 = function() awful.util.spawn(script .. "tera x32"); smenu.visible = false end}
+    smenu:add_item{text="Tera x64",icon = apps.."gnome-gnibbles.png", button1 = function() awful.util.spawn(script .. "tera x64"); smenu.visible = false end}
+    smenu:add_item{text="Rift x32",icon = apps.."gnome-gnibbles.png", button1 = function() awful.util.spawn(script .. "rift x32"); smenu.visible = false end}
+    smenu:add_item{text="Rift x64",icon = apps.."gnome-gnibbles.png", button1 = function() awful.util.spawn(script .. "rift x64"); smenu.visible = false end}
     smenu:add_item{text="Cancel", icon = emblems.."emblem-noread.png", button1 = function() smenu.visible = false end}
     return smenu
   end}
-bar_menu:add_item{text="ACE Stream",icon = devices.."computer.png", sub_menu = function()
+main_menu:add_item{text="ACE Stream",icon = devices.."computer.png", sub_menu = function()
   local smenu = radical.context{}
     smenu:add_item{text="детские", icon = mimetypes.."video-x-matroska.png", button1 = function() awful.util.spawn("acestreamplayer http://super-pomoyka.us.to/trash/ttv-list/ttv.child.player.m3u"); smenu.visible = false end}
     smenu:add_item{text="общие", icon = mimetypes.."video-x-matroska.png",button1 = function() awful.util.spawn("acestreamplayer http://super-pomoyka.us.to/trash/ttv-list/ttv.common.player.m3u"); smenu.visible = false end}
@@ -213,7 +219,7 @@ bar_menu:add_item{text="ACE Stream",icon = devices.."computer.png", sub_menu = f
 
     return smenu
   end}
-bar_menu:add_item {text="Exit",icon = actions.."system-shutdown.png", sub_menu = function()
+main_menu:add_item {text="Exit",icon = actions.."system-shutdown.png", sub_menu = function()
   local smenu = radical.context{}
     smenu:add_item{text="Shutdown", icon = actions.."system-shutdown.png", button1 = function() awful.util.spawn("systemctl poweroff"); smenu.visible = false end}
     smenu:add_item{text="Reboot", icon = actions.."system-reboot.png", button1 = function() awful.util.spawn("systemctl reboot"); smenu.visible = false end}
@@ -222,11 +228,11 @@ bar_menu:add_item {text="Exit",icon = actions.."system-shutdown.png", sub_menu =
     smenu:add_item{text="Cancel", icon = emblems.."emblem-noread.png", button1 = function() smenu.visible = false end}
     return smenu
   end}
-bar_menu:add_item{text="Cancel",icon = emblems.."emblem-noread.png", button1 = function() bar_menu.visible = false end}
+main_menu:add_item{text="Cancel",icon = emblems.."emblem-noread.png", button1 = function() main_menu.visible = false end}
 
 START_btn = wibox.widget.imagebox()
 START_btn.image = places.."archlinux-logo.png"
-START_btn.menu = bar_menu
+START_btn.menu = main_menu
 
 -- }}}
 --== radical ==--
@@ -236,7 +242,7 @@ local wiboks = require("util.wiboks")
 
 -- {{{ Mouse bindings
 root.buttons(awful.util.table.join(
-    awful.button({ }, 3, function () mymainmenu:toggle() end),
+    awful.button({ }, 3, function () main_menu.visible = true end),
     awful.button({ }, 4, awful.tag.viewnext),
     awful.button({ }, 5, awful.tag.viewprev)
 ))
@@ -317,7 +323,7 @@ globalkeys = awful.util.table.join(
             if client.focus then client.focus:raise() end
         end),
     --awful.key({ modkey,           }, "w", function () mymainmenu:show() end,
-    awful.key({ modkey,           }, "w", function () bar_menu.visible = true end,
+    awful.key({ modkey,           }, "w", function () main_menu.visible = true end,
               {description = "show main menu", group = "awesome"}),
 
     -- Layout manipulation
@@ -360,7 +366,7 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, "Shift" }, "d", function () lain.util.delete_tag() end),
 
     -- Standard program
-    awful.key({ modkey,           }, "Return", function () awful.spawn(terminal) end,
+    awful.key({ modkey,           }, "Return", function () awful.spawn(terminal.." -g 175x59") end,
               {description = "open a terminal", group = "launcher"}),
     awful.key({ modkey, "Control" }, "r", awesome.restart,
               {description = "reload awesome", group = "awesome"}),
@@ -440,6 +446,8 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey }, "e", function () awful.spawn(gui_editor) end),
     awful.key({ modkey }, "g", function () awful.spawn(graphics) end),
     awful.key({ modkey }, "d", function () awful.spawn(files) end),
+    awful.key({ modkey }, "t", function () awful.spawn(telegram) end),
+
 
     -- Default
     -- Prompt
