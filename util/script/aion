@@ -1,0 +1,2 @@
+#!/bin/bash
+env WINEPREFIX="/home/jacka/wine-games/PREFIX/.aion" /usr/bin/wine C:\\windows\\command\\start.exe /Unix /home/jacka/.aion/dosdevices/c:/users/Public/Рабочий\ стол/Aion.lnk > ~/wine-aion 2>&1

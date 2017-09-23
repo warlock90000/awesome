@@ -1,0 +1,2 @@
+#!/bin/bash
+env WINEPREFIX="/home/jacka/wine-games/PREFIX/.aion" wine C:\\totalcmd\\TOTALCMD.EXE /Unix > ~/wine.log 2>&1

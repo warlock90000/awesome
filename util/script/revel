@@ -1,0 +1,24 @@
+#!/bin/bash
+vblank_mode=1
+export vblank_mode=1
+
+function rus {
+    env WINEPREFIX="/home/jacka/wine-games/PREFIX/.wine32_bd" /home/jacka/wine-games/wine/wine-2.4-staging/bin/wine c:\\GameCenter\\GameCenter@Mail.Ru.exe
+}
+
+function rus_g {
+    env WINEPREFIX="/home/jacka/wine-games/PREFIX/.wine32_bd" /home/jacka/wine-games/wine/wine-2.4_g/bin/wine c:\\GameCenter\\GameCenter@Mail.Ru.exe
+}
+
+if [ "$?" = 0 ]; then
+    if [ "$1" = "rus" ]; then
+        rus;
+    elif [ "$1" = "rus_g" ]; then
+        rus_g;
+    else
+        echo "No platform key";
+    fi;
+else
+    echo "ERROR"
+fi
+exit

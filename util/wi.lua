@@ -771,7 +771,7 @@ balans_widget = awful.widget.watch("zsh -c '~/.config/awesome/util/script/balans
   end)
 --========= Balans =========--
 --========= Ext. IP =========--
-ext_ip = awful.widget.watch('wget -O - -q icanhazip.com', 600,
+ext_ip = awful.widget.watch('wget -O - -q -4 icanhazip.com', 6000,
   function(widget, stdout)
     widget.markup = markup.font(TermB11, color3.."IP:"..span_end..color9..stdout..span_end)
     return

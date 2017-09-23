@@ -1,0 +1,2 @@
+#!/bin/bash
+WINEARCH=win32 WINEPREFIX=$HOME/wine-games/PREFIX/.wine_p1 wine C:\\windows\\command\\start.exe /Unix $HOME/wine-games/PREFIX/.wine_p1/dosdevices/c:/Program\ Files/PhotoshopPortable/PhotoshopCS6Portable.exe

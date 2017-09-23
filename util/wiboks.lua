@@ -729,11 +729,11 @@ awful.screen.connect_for_each_screen(function(s)
         s = awful.screen.focused()
         s.dock_wibox_timer:start()
         s.dock_wibox.width = 1
-        vicious.suspend()
+        --vicious.suspend()
     end)
 
     s.dock_wibox:connect_signal("mouse::enter", function()
-        vicious.activate()
+        --vicious.activate()
         s = awful.screen.focused()
         s.dock_wibox.width = 300
         s.dock_wibox.y = s.workarea.height/2 - s.dockheight/2

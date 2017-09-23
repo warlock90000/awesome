@@ -1,0 +1,25 @@
+#!/bin/bash
+#rm -rf /tmp/mesa && WINEARCH=win32 WINEPREFIX=$HOME/wine-games/PREFIX/.wine32 $HOME/wine-games/wine/wine-2.12-1_g/bin/wine C:\\Tera\\Destiny\\launcher\\launcher.exe > /home/jacka/wine-tera
+vblank_mode=1
+export vblank_mode=1
+
+function x32 {
+    WINEARCH=win32 WINEPREFIX=$HOME/wine-games/PREFIX/.wine32 $HOME/wine-games/wine/wine-2.12-1_g/bin/wine C:\\Tera\\Destiny\\launcher\\launcher.exe > /home/jacka/wine-tera 2>&1
+}
+
+function x64 {
+    WINEARCH=win64 WINEPREFIX=$HOME/wine-games/PREFIX/.wine64 $HOME/wine-games/wine/wine-2.12-1_g/bin/wine C:\\Tera\\Destiny\\launcher\\launcher.exe > /home/jacka/wine-tera 2>&1
+}
+
+if [ "$?" = 0 ]; then
+    if [ "$1" = "x32" ]; then
+        x32;
+    elif [ "$1" = "x64" ]; then
+        x64;
+    else
+        echo "No platform key";
+    fi;
+else
+    echo "ERROR"
+fi
+exit
